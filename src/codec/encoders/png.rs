@@ -2,8 +2,7 @@ use flate2::write::ZlibEncoder;
 use flate2::Compression;
 
 use super::Encoder;
-use std::fs::File;
-use std::io::{self, BufWriter, Write};
+use std::io::Write;
 
 #[derive(Debug, Default)]
 pub struct PngEncoder;
@@ -44,11 +43,15 @@ impl Encoder for PngEncoder {
 
         let mut raw_data =
             Vec::with_capacity((1 + image.width() * 3) as usize * image.height() as usize);
+        // y = 0, idx = 0 .. 512 * 3 (Gets the first row of all 3 channels)
         for y in 0..image.height() {
             raw_data.push(0);
-            raw_data.extend_from_slice(
-                &image.data[(y * image.width * 3) as usize..((y + 1) * image.width * 3) as usize],
-            );
+
+            let start: usize = (y * image.width() * 3) as usize;
+            let end: usize = ((y + 1) * image.width() * 3) as usize;
+
+            // Take one row of all three channels.
+            raw_data.extend_from_slice(&image.slice(start, end))
         }
 
         let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
