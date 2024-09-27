@@ -12,11 +12,17 @@ use std::{
 fn main() {
     let encoder = PngEncoder::default();
 
-    let image = Image::new(512, 512, ColorFormat::RGB);
+    let image = Image::new(1920, 1080, ColorFormat::RGB);
     let data = vec![0; image.size()];
     let mut image = Image::from_data(data, image.width(), image.height(), ColorFormat::RGB);
 
-    image[(3, 3)] = [255, 255, 255];
+    // image[(3, 3, 1)] = 255;
+    for i in 0..image.width() {
+        if i >= image.height() {
+            break;
+        }
+        image[(i, i, 2)] = 255;
+    }
 
     let png_bytes = encoder.encode(&image).unwrap();
 

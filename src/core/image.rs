@@ -18,22 +18,34 @@ impl ColorFormat {
 
 pub struct Image {
     /*
-        Image data will be a 1D Vector to help with efficient memory usage.
-        Example 2 x 2 RGB Image
+        Images are stored as row major.
+        Formula: (y * self.width + x) * number-of-channels
 
-        (0,0)         (0,1)
-        R00 G00 B00   R01 G01 B01
-        (1,0)         (1,1)
-        R10 G10 B10   R11 G11 B11
+        For example:
+            A 3 x 3 Image is stored as a 1D array of length 27
+            Which looks something like:
+            [
+                R00, G00, B00,
+                R01, G01, B01,
+                R02, G02, B02
+                R10, G10, B10
+                R11, G11, B11,
+                R12, G12, B12,
+                R20, G20, B20,
+                R21, G21, B21,
+                R22, G22, B22
+            ]
 
-        Will result in a 1D array such that
+        Now if we want to get all 3 channels at index (x, y)
+        where
+            x = 1,
+            y = 1,
+            image width = 3
+            number-of-channels = 3 (For an RGB)
 
-        [
-            R00, G00, B00,  // Pixel at (0,0)
-            R01, G01, B01,  // Pixel at (0,1)
-            R10, G10, B10,  // Pixel at (1,0)
-            R11, G11, B11   // Pixel at (1,1)
-        ]
+        index = (1 * 3 + 1) * 3
+              = (12)
+        So 12 .. (12 + 3) => (R11, G11, B11)
     */
     width: u32,
     height: u32,
@@ -83,46 +95,11 @@ impl Image {
         self.height
     }
 
-    pub fn color_format(&self) -> &ColorFormat {
-        &self.color_format
-    }
-
     pub fn size(&self) -> usize {
         self.height as usize * self.width as usize * self.color_format.channels() as usize
     }
 
     fn get_index(&self, x: u32, y: u32) -> Option<usize> {
-        /*
-            Images are stored as row major.
-            Formula: (y * self.width + x) * number-of-channels
-
-            For example:
-                A 3 x 3 Image is stored as a 1D array of length 27
-                Which looks something like:
-                [
-                    R00, G00, B00,
-                    R01, G01, B01,
-                    R02, G02, B02
-                    R10, G10, B10
-                    R11, G11, B11,
-                    R12, G12, B12,
-                    R20, G20, B20,
-                    R21, G21, B21,
-                    R22, G22, B22
-                ]
-
-            Now if we want to get all 3 channels at index (x, y)
-            where
-                x = 1,
-                y = 1,
-                image width = 3
-                number-of-channels = 3 (For an RGB)
-
-            index = (1 * 3 + 1) * 3
-                  = (12)
-            So 12 .. (12 + 3) => (R11, G11, B11)
-
-        */
         let index = (y * self.width + x) as usize * self.color_format.channels();
         if index < self.size() {
             Some(index)
@@ -149,6 +126,30 @@ impl IndexMut<(u32, u32)> for Image {
         let index = self.get_index(x, y).expect("Index out of bounds");
         let channels = self.color_format.channels();
         let slice = &mut self.data[index..index + channels];
+        slice.try_into().expect("Slice has incorrect length")
+    }
+}
+
+impl Index<(u32, u32, u32)> for Image {
+    type Output = u8;
+
+    fn index(&self, (x, y, c): (u32, u32, u32)) -> &Self::Output {
+        if c >= self.color_format.channels() as u32 {
+            panic!("Cannot get channel {c:?}")
+        }
+        let index = self.get_index(x, y).expect("Index out of bounds");
+        let slice = &self.data[index + c as usize];
+        slice.try_into().expect("Slice has incorrect length")
+    }
+}
+
+impl IndexMut<(u32, u32, u32)> for Image {
+    fn index_mut(&mut self, (x, y, c): (u32, u32, u32)) -> &mut Self::Output {
+        if c >= self.color_format.channels() as u32 {
+            panic!("Cannot get channel {c:?}")
+        }
+        let index = self.get_index(x, y).expect("Index out of bounds");
+        let slice = &mut self.data[index + c as usize];
         slice.try_into().expect("Slice has incorrect length")
     }
 }
