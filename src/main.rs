@@ -3,7 +3,7 @@ mod core;
 mod error;
 
 use codec::encoders::{png::PngEncoder, Encoder};
-use core::image::{ColorFormat, Image};
+use core::image::Image;
 use std::{
     fs::File,
     io::{BufWriter, Write},
@@ -12,9 +12,14 @@ use std::{
 fn main() {
     let encoder = PngEncoder::default();
 
-    let image = Image::new(1920, 1080, ColorFormat::RGB);
+    let image = Image::new(1920, 1080, core::color::ColorSpace::RGB);
     let data = vec![0; image.size()];
-    let mut image = Image::from_data(data, image.width(), image.height(), ColorFormat::RGB);
+    let mut image = Image::from_data(
+        data,
+        image.width(),
+        image.height(),
+        core::color::ColorSpace::RGB,
+    );
 
     // image[(3, 3, 1)] = 255;
     for i in 0..image.width() {

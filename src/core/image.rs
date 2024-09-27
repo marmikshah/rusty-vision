@@ -2,19 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use log::debug;
 
-pub enum ColorFormat {
-    RGB,
-    RGBA,
-}
-
-impl ColorFormat {
-    pub fn channels(&self) -> usize {
-        match self {
-            ColorFormat::RGB => 3,
-            ColorFormat::RGBA => 4,
-        }
-    }
-}
+use super::color::{Color, ColorSpace};
 
 pub struct Image {
     /*
@@ -50,12 +38,12 @@ pub struct Image {
     width: u32,
     height: u32,
     data: Vec<u8>,
-    color_format: ColorFormat,
+    colorspace: ColorSpace,
 }
 
 impl Image {
-    pub fn new(width: u32, height: u32, color_format: ColorFormat) -> Self {
-        let size = width as usize * height as usize * color_format.channels();
+    pub fn new(width: u32, height: u32, colorspace: ColorSpace) -> Self {
+        let size = width as usize * height as usize * colorspace.channels();
         let data = vec![0; size];
         debug!("Creating Image of size {}", data.len());
         dbg!(data.len());
@@ -63,19 +51,19 @@ impl Image {
             width,
             height,
             data,
-            color_format,
+            colorspace,
         }
     }
 
-    pub fn from_data(data: Vec<u8>, width: u32, height: u32, color_format: ColorFormat) -> Self {
-        let size = width as usize * height as usize * color_format.channels();
+    pub fn from_data(data: Vec<u8>, width: u32, height: u32, colorspace: ColorSpace) -> Self {
+        let size = width as usize * height as usize * colorspace.channels();
         assert_eq!(data.len(), size);
 
         Image {
             width,
             height,
             data,
-            color_format,
+            colorspace,
         }
     }
 
@@ -96,11 +84,11 @@ impl Image {
     }
 
     pub fn size(&self) -> usize {
-        self.height as usize * self.width as usize * self.color_format.channels() as usize
+        self.height as usize * self.width as usize * self.colorspace.channels() as usize
     }
 
     fn get_index(&self, x: u32, y: u32) -> Option<usize> {
-        let index = (y * self.width + x) as usize * self.color_format.channels();
+        let index = (y * self.width + x) as usize * self.colorspace.channels();
         if index < self.size() {
             Some(index)
         } else {
@@ -115,7 +103,7 @@ impl Index<(u32, u32)> for Image {
 
     fn index(&self, (x, y): (u32, u32)) -> &Self::Output {
         let index = self.get_index(x, y).expect("Index out of bounds");
-        let channels = self.color_format.channels();
+        let channels = self.colorspace.channels();
         let slice = &self.data[index..index + channels];
         slice.try_into().expect("Slice has incorrect length")
     }
@@ -124,7 +112,7 @@ impl Index<(u32, u32)> for Image {
 impl IndexMut<(u32, u32)> for Image {
     fn index_mut(&mut self, (x, y): (u32, u32)) -> &mut Self::Output {
         let index = self.get_index(x, y).expect("Index out of bounds");
-        let channels = self.color_format.channels();
+        let channels = self.colorspace.channels();
         let slice = &mut self.data[index..index + channels];
         slice.try_into().expect("Slice has incorrect length")
     }
@@ -134,7 +122,7 @@ impl Index<(u32, u32, u32)> for Image {
     type Output = u8;
 
     fn index(&self, (x, y, c): (u32, u32, u32)) -> &Self::Output {
-        if c >= self.color_format.channels() as u32 {
+        if c >= self.colorspace.channels() as u32 {
             panic!("Cannot get channel {c:?}")
         }
         let index = self.get_index(x, y).expect("Index out of bounds");
@@ -145,7 +133,7 @@ impl Index<(u32, u32, u32)> for Image {
 
 impl IndexMut<(u32, u32, u32)> for Image {
     fn index_mut(&mut self, (x, y, c): (u32, u32, u32)) -> &mut Self::Output {
-        if c >= self.color_format.channels() as u32 {
+        if c >= self.colorspace.channels() as u32 {
             panic!("Cannot get channel {c:?}")
         }
         let index = self.get_index(x, y).expect("Index out of bounds");
