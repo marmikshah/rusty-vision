@@ -3,3 +3,4 @@ mod codec;
 mod core;
 mod error;
 mod imgop;
+mod io;

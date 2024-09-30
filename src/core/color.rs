@@ -46,7 +46,6 @@ pub struct Color {
 }
 
 impl Color {
-    
     pub fn new(red: u8, green: u8, blue: u8, alpha: f32) -> Self {
         Color {
             red,

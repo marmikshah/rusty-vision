@@ -1,17 +1,13 @@
 mod codec;
 mod core;
 mod error;
+mod io;
 
-use codec::encoders::{png::PngEncoder, Encoder};
 use core::image::Image;
-use std::{
-    fs::File,
-    io::{BufWriter, Write},
-};
+
+use io::writer::Writer;
 
 fn main() {
-    let encoder = PngEncoder::default();
-
     let image = Image::new(1920, 1080, core::color::ColorSpace::RGB);
     let data = vec![0; image.size()];
     let mut image = Image::from_data(
@@ -29,9 +25,7 @@ fn main() {
         image[(i, i, 2)] = 255;
     }
 
-    let png_bytes = encoder.encode(&image).unwrap();
-
-    let file = File::create("output.png").unwrap();
-    let mut writer = BufWriter::new(file);
-    writer.write_all(&png_bytes).unwrap();
+    image
+        .write(codec::Codex::PNG, "output.png".to_string())
+        .unwrap();
 }

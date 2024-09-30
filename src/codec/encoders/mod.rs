@@ -1,6 +1,18 @@
+mod jpeg;
+mod png;
+
+use super::Codex;
+use crate::core::image::Image;
+
 pub trait Encoder {
-    fn encode(&self, image: &crate::core::image::Image) -> Result<Vec<u8>, crate::error::Error>;
+    fn encode(&self, codec: Codex) -> Result<Vec<u8>, crate::error::Error>;
 }
 
-pub mod jpeg;
-pub mod png;
+impl Encoder for Image {
+    fn encode(&self, codec: Codex) -> Result<Vec<u8>, crate::error::Error> {
+        match codec {
+            Codex::PNG => png::encode(&self),
+            Codex::JPG => todo!(),
+        }
+    }
+}
