@@ -1,31 +1,48 @@
-use std::io::ErrorKind;
+use std::io::{self, ErrorKind};
 
 #[derive(Debug)]
 pub enum Error {
-    IOError(std::io::Error),
-    ImageDecodeError(std::io::Error),
-    ImageEncodeError(std::io::Error),
-    IndexOutOfBounds(std::io::Error),
+    IOError(io::Error),
+    ImageDecodeError(io::Error),
+    ImageEncodeError(io::Error),
+    IndexOutOfBounds(String),
 }
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::ImageDecodeError(_) => todo!(),
-            Error::ImageEncodeError(_) => todo!(),
-            Error::IndexOutOfBounds(_) => todo!(),
-            Error::IOError(error) => todo!(),
+            Error::IOError(error) => write!(f, "I/O error: {}", error),
+            Error::ImageDecodeError(error) => write!(f, "Image decode error: {}", error),
+            Error::ImageEncodeError(error) => write!(f, "Image encode error: {}", error),
+            Error::IndexOutOfBounds(details) => write!(f, "Index out of bounds: {}", details),
         }
     }
 }
+
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        None
+        match self {
+            Error::IOError(error) => Some(error),
+            Error::ImageDecodeError(error) => Some(error),
+            Error::ImageEncodeError(error) => Some(error),
+            Error::IndexOutOfBounds(_) => None,
+        }
     }
 }
 
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        Error::ImageEncodeError(err)
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Error::IOError(err)
+    }
+}
+
+impl From<Error> for io::Error {
+    fn from(err: Error) -> Self {
+        match err {
+            Error::IOError(error) => error,
+            Error::ImageDecodeError(error) => error,
+            Error::ImageEncodeError(error) => error,
+            Error::IndexOutOfBounds(details) => io::Error::new(ErrorKind::Other, details),
+        }
     }
 }

@@ -5,8 +5,9 @@ mod io;
 
 use core::image::Image;
 
+use codec::Codex;
 use error::Error;
-use io::writer::Writer;
+use io::{reader::Reader, writer::Writer};
 
 fn main() -> Result<(), Error> {
     let image = Image::new(1920, 1080, core::color::ColorSpace::RGB);
@@ -27,6 +28,19 @@ fn main() -> Result<(), Error> {
     }
 
     image.write("output.png".to_string(), codec::Codex::PNG)?;
+
+    let path = String::from("output.png");
+    let mut image2 = Image::read(&path, Codex::PNG)?;
+
+    assert_eq!(image2.width(), 1920);
+    assert_eq!(image2.height(), 1080);
+
+    for i in 0..image.height() {
+        image2[(i + 20, i, 1)] = 255;
+    }
+
+    let output = String::from("out.png");
+    image2.write(output, Codex::PNG)?;
 
     Ok(())
 }

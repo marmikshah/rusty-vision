@@ -2,6 +2,8 @@ use std::ops::{Index, IndexMut};
 
 use log::debug;
 
+use crate::{codec::Codex, core::color, io::reader::Reader};
+
 use super::color::{Color, ColorSpace};
 
 pub struct Image {
@@ -57,6 +59,7 @@ impl Image {
 
     pub fn from_data(data: Vec<u8>, width: u32, height: u32, colorspace: ColorSpace) -> Self {
         let size = width as usize * height as usize * colorspace.channels();
+        dbg!(width as usize * height as usize * colorspace.channels());
         assert_eq!(data.len(), size);
 
         Image {
