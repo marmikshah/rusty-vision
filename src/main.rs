@@ -1,31 +1,32 @@
 mod codec;
 mod core;
 mod error;
+mod io;
 
-use codec::{
-    decoders::png,
-    encoders::{png::PngEncoder, Encoder},
-};
-use core::image::{ColorFormat, Image};
-use std::{
-    error::Error,
-    fs::File,
-    io::{BufWriter, Write},
-};
+use core::image::Image;
 
-fn main() {
-    let width = 10;
-    let height = 10;
-    let red_pixel = [255, 0, 0];
+use error::Error;
+use io::writer::Writer;
 
-    let data = red_pixel.repeat((width * height) as usize);
-    let encoder = PngEncoder::default();
+fn main() -> Result<(), Error> {
+    let image = Image::new(1920, 1080, core::color::ColorSpace::RGB);
+    let data = vec![0; image.size()];
+    let mut image = Image::from_data(
+        data,
+        image.width(),
+        image.height(),
+        core::color::ColorSpace::RGB,
+    );
 
-    let image = &Image::new(width, height, data, ColorFormat::RGB);
+    // image[(3, 3, 1)] = 255;
+    for i in 0..image.width() {
+        if i >= image.height() {
+            break;
+        }
+        image[(i, i, 2)] = 255;
+    }
 
-    let png_bytes = encoder.encode(image).unwrap();
+    image.write("output.png".to_string(), codec::Codex::PNG)?;
 
-    let file = File::create("output.png").unwrap();
-    let mut writer = BufWriter::new(file);
-    writer.write_all(&png_bytes).unwrap();
+    Ok(())
 }

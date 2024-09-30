@@ -2,8 +2,10 @@ use std::io::ErrorKind;
 
 #[derive(Debug)]
 pub enum Error {
+    IOError(std::io::Error),
     ImageDecodeError(std::io::Error),
     ImageEncodeError(std::io::Error),
+    IndexOutOfBounds(std::io::Error),
 }
 
 impl std::fmt::Display for Error {
@@ -11,6 +13,8 @@ impl std::fmt::Display for Error {
         match self {
             Error::ImageDecodeError(_) => todo!(),
             Error::ImageEncodeError(_) => todo!(),
+            Error::IndexOutOfBounds(_) => todo!(),
+            Error::IOError(error) => todo!(),
         }
     }
 }
