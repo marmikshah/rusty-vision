@@ -5,9 +5,10 @@ mod io;
 
 use core::image::Image;
 
+use error::Error;
 use io::writer::Writer;
 
-fn main() {
+fn main() -> Result<(), Error> {
     let image = Image::new(1920, 1080, core::color::ColorSpace::RGB);
     let data = vec![0; image.size()];
     let mut image = Image::from_data(
@@ -25,7 +26,7 @@ fn main() {
         image[(i, i, 2)] = 255;
     }
 
-    image
-        .write(codec::Codex::PNG, "output.png".to_string())
-        .unwrap();
+    image.write("output.png".to_string(), codec::Codex::PNG)?;
+
+    Ok(())
 }
