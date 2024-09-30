@@ -29,7 +29,7 @@ fn main() -> Result<(), Error> {
 
     image.write("output.png".to_string(), codec::Codex::PNG)?;
 
-    let path = String::from("output.png");
+    let path = String::from("sample.png");
     let mut image2 = Image::read(&path, Codex::PNG)?;
 
     assert_eq!(image2.width(), 1920);
