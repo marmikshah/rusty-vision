@@ -75,7 +75,9 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
             b"IEND" => {
                 break 'outer;
             }
-            _ => {}
+            value => {
+                panic!("Block type {} decoding has not been implemented", String::from_utf8_lossy(value));
+            }
         }
     }
 
