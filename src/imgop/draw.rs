@@ -1,14 +1,70 @@
-use crate::core::image::Image;
+use log::debug;
+use std::ops::Index;
 
-pub fn rect(image: &Image, x: u32, y: u32, width: u32, height: u32) -> Result<(), ()> {
+use crate::{
+    core::{color::Color, image::Image},
+    error::Error,
+};
 
-    Ok(())
+pub struct RectParams {
+    x: usize,
+    y: usize,
+    width: usize,
+    height: usize,
+    color: Color,
+    border_width: Option<usize>,
+    corner_radius: Option<f32>,
+    fill_color: Option<Color>,
 }
 
-pub fn square(image: &Image, x: u32, y: u32, width: u32, height: u32) -> Result<(), ()> {
-    rect(image, x, y, width, height)
+impl RectParams {
+    pub fn new(x: usize, y: usize, width: usize, height: usize) -> RectParams {
+        let color = Color::new(150, 125, 123, 1.0);
+
+        RectParams {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            color: color,
+            border_width: None,
+            corner_radius: None,
+            fill_color: None,
+        }
+    }
 }
 
-pub fn circle(image: &Image, center: u32, radius: u32) -> Result<(), ()> {
-    Ok(())
+pub struct CircleParams {
+    center: usize,
+    radius: usize, // Todo: Allow float values
+}
+
+pub trait Drawing {
+    // TODO: Improve return types
+    fn rect(&mut self, params: &RectParams) -> Result<(), ()>;
+
+    fn square(&mut self, params: &RectParams) -> Result<(), ()>;
+
+    fn circle(&mut self, params: &CircleParams) -> Result<(), ()>;
+}
+
+impl Drawing for Image {
+    fn rect(&mut self, params: &RectParams) -> Result<(), ()> {
+        for i in 0..params.width {
+            self.set_pixel(params.x + i, params.y, &params.color)?;
+            self.set_pixel(params.x, params.y + i, &params.color)?;
+            self.set_pixel(params.x + params.width, params.y + i, &params.color)?;
+            self.set_pixel(params.x + i, params.y + params.height, &params.color)?;
+        }
+
+        Ok(())
+    }
+
+    fn square(&mut self, params: &RectParams) -> Result<(), ()> {
+        self.rect(params)
+    }
+
+    fn circle(&mut self, params: &CircleParams) -> Result<(), ()> {
+        todo!()
+    }
 }
