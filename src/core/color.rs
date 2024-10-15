@@ -1,3 +1,5 @@
+use std::ops::Index;
+
 use super::image::Image;
 
 #[derive(PartialEq, Eq)]
@@ -42,16 +44,34 @@ pub struct Color {
     pub red: u8,
     pub green: u8,
     pub blue: u8,
-    pub alpha: f32,
+    pub alpha: u8,
 }
 
 impl Color {
     pub fn new(red: u8, green: u8, blue: u8, alpha: f32) -> Self {
+        let alpha = (alpha * 255.0) as u8;
         Color {
             red,
             green,
             blue,
             alpha,
+        }
+    }
+
+    pub fn as_vec(&self) -> Vec<u8> {
+        vec![self.red, self.green, self.blue, self.alpha]
+    }
+}
+
+impl Index<usize> for Color {
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.red,
+            1 => &self.green,
+            2 => &self.blue,
+            _ => &self.red, // todo fix this
         }
     }
 }

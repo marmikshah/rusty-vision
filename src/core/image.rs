@@ -1,51 +1,56 @@
-use std::ops::{Index, IndexMut};
+use std::{
+    ops::{Index, IndexMut},
+    thread::panicking,
+};
 
 use log::debug;
 
-use crate::{codec::Codex, core::color, io::reader::Reader};
-
 use super::color::{Color, ColorSpace};
 
+type Index4D = (usize, usize, usize, usize);
+type Index3D = (usize, usize, usize);
+type Index2D = (usize, usize);
+
+/// ------------------------------------------------------------------------------
+///  Images are stored as a row major vector.
+///  Formula: (y * self.width + x) * number-of-channels
+
+///  For example:
+///      A 3 x 3 Image is stored as a 1D array of length 27
+///      Which looks something like:
+///      [
+///          R00, G00, B00,
+///          R01, G01, B01,
+///          R02, G02, B02
+///          R10, G10, B10
+///          R11, G11, B11,
+///          R12, G12, B12,
+///          R20, G20, B20,
+///          R21, G21, B21,
+///          R22, G22, B22
+///      ]
+
+///  Now if we want to get all 3 channels at index (x, y)
+///  where
+///      x = 1,
+///      y = 1,
+///      image width = 3
+///      number-of-channels = 3 (For an RGB)
+
+///  index = (1 * 3 + 1) * 3
+///        = (12)
+///  So 12 .. (12 + 3) => (R11, G11, B11)
+/// ------------------------------------------------------------------------------
 pub struct Image {
-    /*
-        Images are stored as row major.
-        Formula: (y * self.width + x) * number-of-channels
-
-        For example:
-            A 3 x 3 Image is stored as a 1D array of length 27
-            Which looks something like:
-            [
-                R00, G00, B00,
-                R01, G01, B01,
-                R02, G02, B02
-                R10, G10, B10
-                R11, G11, B11,
-                R12, G12, B12,
-                R20, G20, B20,
-                R21, G21, B21,
-                R22, G22, B22
-            ]
-
-        Now if we want to get all 3 channels at index (x, y)
-        where
-            x = 1,
-            y = 1,
-            image width = 3
-            number-of-channels = 3 (For an RGB)
-
-        index = (1 * 3 + 1) * 3
-              = (12)
-        So 12 .. (12 + 3) => (R11, G11, B11)
-    */
-    width: u32,
-    height: u32,
+    width: usize,
+    height: usize,
     data: Vec<u8>,
     colorspace: ColorSpace,
 }
 
 impl Image {
-    pub fn new(width: u32, height: u32, colorspace: ColorSpace) -> Self {
-        let size = width as usize * height as usize * colorspace.channels();
+    pub fn new(width: usize, height: usize, colorspace: ColorSpace) -> Self {
+        let size = width * height * colorspace.channels();
         let data = vec![0; size];
         debug!("Creating Image of size {}", data.len());
         dbg!(data.len());
@@ -57,7 +62,7 @@ impl Image {
         }
     }
 
-    pub fn from_data(data: Vec<u8>, width: u32, height: u32, colorspace: ColorSpace) -> Self {
+    pub fn from_data(data: Vec<u8>, width: usize, height: usize, colorspace: ColorSpace) -> Self {
         let size = width as usize * height as usize * colorspace.channels();
         dbg!(width as usize * height as usize * colorspace.channels());
         assert_eq!(data.len(), size);
@@ -78,11 +83,11 @@ impl Image {
         &mut self.data[start..end]
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> usize {
         self.height
     }
 
@@ -90,57 +95,130 @@ impl Image {
         self.height as usize * self.width as usize * self.colorspace.channels() as usize
     }
 
-    fn get_index(&self, x: u32, y: u32) -> Option<usize> {
+    ///
+    /// Calculates the 1D Index based on the provided (x, y)
+    /// # Arguments
+    ///
+    /// * `x` - The x coordinate
+    /// * `y` - The y coordinate
+    ///
+    /// # Returns
+    ///
+    /// * Option<usize> containing Index if within bounds,
+    ///     otherwise None
+    ///
+    pub fn get_index(&self, x: usize, y: usize) -> usize {
         let index = (y * self.width + x) as usize * self.colorspace.channels();
-        if index < self.size() {
-            Some(index)
-        } else {
-            None
-            // TODO: ("Decide whether to panic here or not");
+        if index >= self.size() {
+            panic!("{x:?}x{y:?} out of bounds!")
         }
+        index
     }
-}
 
-impl Index<(u32, u32)> for Image {
-    type Output = [u8; 3];
+    pub fn index_to_coord(&self, index: usize) {}
 
-    fn index(&self, (x, y): (u32, u32)) -> &Self::Output {
-        let index = self.get_index(x, y).expect("Index out of bounds");
+    ///
+    /// Return a slize of 1 pixel (including all channels)
+    ///
+    /// # Arguments
+    ///
+    /// * `x` - The x coordinate
+    /// * `y` - The y coordinate
+    ///
+    /// # Returns
+    ///
+    /// * An immutable &[u8]
+    ///
+    pub fn get_pixel(&self, x: usize, y: usize) -> &[u8] {
         let channels = self.colorspace.channels();
-        let slice = &self.data[index..index + channels];
-        slice.try_into().expect("Slice has incorrect length")
+        let index = self.get_index(x, y);
+        &self.data[index..index + channels]
     }
-}
 
-impl IndexMut<(u32, u32)> for Image {
-    fn index_mut(&mut self, (x, y): (u32, u32)) -> &mut Self::Output {
-        let index = self.get_index(x, y).expect("Index out of bounds");
+    /// Same as `get_pixel` but just a mutable reference
+    pub fn get_mut_pixel(&mut self, x: usize, y: usize) -> &mut [u8] {
         let channels = self.colorspace.channels();
-        let slice = &mut self.data[index..index + channels];
-        slice.try_into().expect("Slice has incorrect length")
+        let index = self.get_index(x, y);
+        &mut self.data[index..index + channels]
+    }
+
+    pub fn set_pixel(&mut self, x: usize, y: usize, color: &Color) -> Result<(), ()> {
+        let channels = self.colorspace.channels();
+        let pixel = self.get_mut_pixel(x, y);
+        for i in 0..channels {
+            pixel[i] = color[i];
+        }
+        Ok(())
     }
 }
 
-impl Index<(u32, u32, u32)> for Image {
+///
+/// Overriding [] for 1D indexing.
+///
+/// # Returns an immutable reference to the requested Index
+///     value in `data` vector
+///
+impl Index<usize> for Image {
     type Output = u8;
 
-    fn index(&self, (x, y, c): (u32, u32, u32)) -> &Self::Output {
-        if c >= self.colorspace.channels() as u32 {
-            panic!("Cannot get channel {c:?}")
-        }
-        let index = self.get_index(x, y).expect("Index out of bounds");
-        let slice = &self.data[index + c as usize];
-        slice.try_into().expect("Slice has incorrect length")
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[index]
     }
 }
 
-impl IndexMut<(u32, u32, u32)> for Image {
-    fn index_mut(&mut self, (x, y, c): (u32, u32, u32)) -> &mut Self::Output {
-        if c >= self.colorspace.channels() as u32 {
-            panic!("Cannot get channel {c:?}")
-        }
-        let index = self.get_index(x, y).expect("Index out of bounds");
-        let slice = &mut self.data[index + c as usize];
-        slice.try_into().expect("Slice has incorrect length")
+///
+/// Overriding [] for 1D indexing.
+///
+/// # Returns a mutable reference to the requested Index
+///     value in `data` vector
+///
+impl IndexMut<usize> for Image {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.data[index as usize]
+    }
+}
+
+///
+/// Overriding [] for 2D indexing.
+///
+/// # Returns an immutable reference to a given pixel
+///     The pixel
+///
+impl Index<Index2D> for Image {
+    type Output = [u8];
+
+    fn index(&self, (x, y): Index2D) -> &Self::Output {
+        self.get_pixel(x, y)
+    }
+}
+
+impl IndexMut<Index2D> for Image {
+    fn index_mut(&mut self, (x, y): Index2D) -> &mut Self::Output {
+        self.get_mut_pixel(x, y)
+    }
+}
+
+///
+/// Overriding [] for 3D indexing.
+/// This is useful when you want to modify a specific channel
+/// For example, to modify green channel,
+/// image[(2, 2, 1)] = 255
+/// Where `1` = the channel number.
+///
+/// See ColorSpace for more information on Channel Numbers
+///
+impl Index<Index3D> for Image {
+    type Output = u8;
+
+    fn index(&self, (x, y, c): Index3D) -> &Self::Output {
+        let pixel = self.get_pixel(x, y);
+        &pixel[c]
+    }
+}
+
+impl IndexMut<Index3D> for Image {
+    fn index_mut(&mut self, (x, y, c): Index3D) -> &mut Self::Output {
+        let pixel = self.get_mut_pixel(x, y);
+        &mut pixel[c]
     }
 }

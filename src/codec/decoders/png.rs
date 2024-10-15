@@ -115,5 +115,10 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
         }
     }
 
-    Ok(Image::from_data(data, width, height, ColorSpace::RGBA))
+    Ok(Image::from_data(
+        data,
+        width as usize,
+        height as usize,
+        ColorSpace::RGBA,
+    ))
 }
