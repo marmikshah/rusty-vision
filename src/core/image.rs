@@ -1,9 +1,8 @@
-use std::{
-    ops::{Index, IndexMut},
-    thread::panicking,
-};
+use std::ops::{Index, IndexMut};
 
 use log::debug;
+
+use crate::error::Error;
 
 use super::color::{Color, ColorSpace};
 
@@ -115,8 +114,6 @@ impl Image {
         index
     }
 
-    pub fn index_to_coord(&self, index: usize) {}
-
     ///
     /// Return a slize of 1 pixel (including all channels)
     ///
@@ -142,7 +139,7 @@ impl Image {
         &mut self.data[index..index + channels]
     }
 
-    pub fn set_pixel(&mut self, x: usize, y: usize, color: &Color) -> Result<(), ()> {
+    pub fn set_pixel(&mut self, x: usize, y: usize, color: &Color) -> Result<(), Error> {
         let channels = self.colorspace.channels();
         let pixel = self.get_mut_pixel(x, y);
         for i in 0..channels {
