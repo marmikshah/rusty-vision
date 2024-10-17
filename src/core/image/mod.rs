@@ -1,14 +1,20 @@
+pub mod traits;
+pub mod draw;
+
+use crate::core::color::{Color, ColorSpace};
 use std::ops::{Index, IndexMut};
 
+use crate::error::Error;
 use log::debug;
 
-use crate::error::Error;
+use super::types::*;
 
-use super::color::{Color, ColorSpace};
-
-type Index4D = (usize, usize, usize, usize);
-type Index3D = (usize, usize, usize);
-type Index2D = (usize, usize);
+pub struct Image {
+    width: usize,
+    height: usize,
+    data: Vec<u8>,
+    colorspace: ColorSpace,
+}
 
 /// ------------------------------------------------------------------------------
 ///  Images are stored as a row major vector.
@@ -40,13 +46,6 @@ type Index2D = (usize, usize);
 ///        = (12)
 ///  So 12 .. (12 + 3) => (R11, G11, B11)
 /// ------------------------------------------------------------------------------
-pub struct Image {
-    width: usize,
-    height: usize,
-    data: Vec<u8>,
-    colorspace: ColorSpace,
-}
-
 impl Image {
     pub fn new(width: usize, height: usize, colorspace: ColorSpace) -> Self {
         let size = width * height * colorspace.channels();

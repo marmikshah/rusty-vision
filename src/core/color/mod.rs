@@ -2,7 +2,7 @@ use std::ops::Index;
 
 use super::image::Image;
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ColorSpace {
     RGB,
     RGBA,
@@ -10,11 +10,16 @@ pub enum ColorSpace {
     BRGA,
 }
 
-trait ColorSpaceConversion {
-    fn bgr_to_rgb(&self) -> Result<&Image, ()>;
-    fn rgb_to_bgr(&self) -> Result<&Image, ()>;
-    fn rgba_to_bgra(&self) -> Result<&Image, ()>;
-    fn bgra_to_rgba(&self) -> Result<&Image, ()>;
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct Color {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
+    pub alpha: u8,
+}
+
+trait Convert {
+    fn convert(to_colorspace: ColorSpace) -> Self;
 }
 
 impl ColorSpace {
@@ -38,13 +43,6 @@ impl ColorSpace {
             Ok(())
         }
     }
-}
-
-pub struct Color {
-    pub red: u8,
-    pub green: u8,
-    pub blue: u8,
-    pub alpha: u8,
 }
 
 impl Color {
