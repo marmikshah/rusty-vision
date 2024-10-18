@@ -1,3 +1,5 @@
+use std::ops::Add;
+
 use super::shape::Shape;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -19,5 +21,16 @@ impl Point {
 
     pub fn point_to_index(&self, shape: &Shape) -> usize {
         (self.y * shape.width + self.x) * shape.ndim
+    }
+}
+
+impl Add<Shape> for Point {
+    type Output = Point;
+
+    fn add(self, shape: Shape) -> Self::Output {
+        let x_new = self.x + shape.width;
+        let y_new = self.y + shape.height;
+
+        Point { x: x_new, y: y_new }
     }
 }

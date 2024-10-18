@@ -17,6 +17,7 @@ pub struct RectParams {
 impl RectParams {
     pub fn new(topleft: Point, shape: Shape, border_width: Option<usize>) -> RectParams {
         let color = Color::new(150, 125, 123, 1.0);
+        let fill_color = Color::new(25, 125, 25, 1.0);
 
         RectParams {
             topleft,
@@ -24,7 +25,7 @@ impl RectParams {
             color,
             border_width,
             corner_radius: None,
-            fill_color: None,
+            fill_color: Some(fill_color),
         }
     }
 }
@@ -47,8 +48,24 @@ impl Drawable<RectParams> for Image {
         };
 
         dbg!(params.shape);
-        // TODO: Change to point
         // TODO: Implement fill
+        match params.fill_color {
+            Some(color) => {
+                let top_left = params.topleft;
+                let bottom_right = params.topleft + params.shape;
+
+                for i in top_left.x..bottom_right.x + 1 {
+                    for j in top_left.y..bottom_right.y + 1 {
+                        let point = Point::new(i, j);
+                        self.set_pixel(&point, &color)?;
+                    }
+                }
+            }
+            None => {
+                dbg!("Fill not enabled");
+            }
+        };
+
         for i in 0..params.shape.width + border_width {
             let range = match params.border_width {
                 Some(value) => (-((value / 2) as i32), ((value / 2) + 1) as i32),

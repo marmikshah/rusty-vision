@@ -59,6 +59,10 @@ impl Color {
     pub fn as_vec(&self) -> Vec<u8> {
         vec![self.red, self.green, self.blue, self.alpha]
     }
+
+    pub fn as_rgb_slice(&self) -> [u8; 3] {
+        [self.red, self.green, self.blue]
+    }
 }
 
 impl Index<usize> for Color {
