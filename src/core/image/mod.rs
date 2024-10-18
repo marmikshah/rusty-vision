@@ -1,17 +1,18 @@
-pub mod traits;
 pub mod draw;
+pub mod traits;
 
 use crate::core::color::{Color, ColorSpace};
+use crate::core::geometry::shape::Shape;
 use std::ops::{Index, IndexMut};
 
 use crate::error::Error;
 use log::debug;
 
+use super::geometry::point::Point;
 use super::types::*;
 
 pub struct Image {
-    width: usize,
-    height: usize,
+    shape: Shape,
     data: Vec<u8>,
     colorspace: ColorSpace,
 }
@@ -47,27 +48,22 @@ pub struct Image {
 ///  So 12 .. (12 + 3) => (R11, G11, B11)
 /// ------------------------------------------------------------------------------
 impl Image {
-    pub fn new(width: usize, height: usize, colorspace: ColorSpace) -> Self {
-        let size = width * height * colorspace.channels();
-        let data = vec![0; size];
+    pub fn new(shape: Shape, colorspace: ColorSpace) -> Self {
+        let data = vec![0; shape.size()];
+        assert_eq!(data.len(), shape.size());
         debug!("Creating Image of size {}", data.len());
         dbg!(data.len());
         Image {
-            width,
-            height,
+            shape,
             data,
             colorspace,
         }
     }
 
-    pub fn from_data(data: Vec<u8>, width: usize, height: usize, colorspace: ColorSpace) -> Self {
-        let size = width as usize * height as usize * colorspace.channels();
-        dbg!(width as usize * height as usize * colorspace.channels());
-        assert_eq!(data.len(), size);
-
+    pub fn from_data(data: Vec<u8>, shape: Shape, colorspace: ColorSpace) -> Self {
+        assert_eq!(data.len(), shape.size());
         Image {
-            width,
-            height,
+            shape,
             data,
             colorspace,
         }
@@ -82,15 +78,15 @@ impl Image {
     }
 
     pub fn width(&self) -> usize {
-        self.width
+        self.shape.width
     }
 
     pub fn height(&self) -> usize {
-        self.height
+        self.shape.height
     }
 
     pub fn size(&self) -> usize {
-        self.height as usize * self.width as usize * self.colorspace.channels() as usize
+        self.shape.size()
     }
 
     ///
@@ -105,10 +101,10 @@ impl Image {
     /// * Option<usize> containing Index if within bounds,
     ///     otherwise None
     ///
-    pub fn get_index(&self, x: usize, y: usize) -> usize {
-        let index = (y * self.width + x) as usize * self.colorspace.channels();
+    pub fn get_index(&self, point: &Point) -> usize {
+        let index = point.point_to_index(&self.shape);
         if index >= self.size() {
-            panic!("{x:?}x{y:?} out of bounds!")
+            panic!("{point:?} out of bounds!")
         }
         index
     }
@@ -125,22 +121,22 @@ impl Image {
     ///
     /// * An immutable &[u8]
     ///
-    pub fn get_pixel(&self, x: usize, y: usize) -> &[u8] {
+    pub fn get_pixel(&self, point: &Point) -> &[u8] {
         let channels = self.colorspace.channels();
-        let index = self.get_index(x, y);
+        let index = self.get_index(point);
         &self.data[index..index + channels]
     }
 
     /// Same as `get_pixel` but just a mutable reference
-    pub fn get_mut_pixel(&mut self, x: usize, y: usize) -> &mut [u8] {
+    pub fn get_mut_pixel(&mut self, point: &Point) -> &mut [u8] {
         let channels = self.colorspace.channels();
-        let index = self.get_index(x, y);
+        let index = self.get_index(point);
         &mut self.data[index..index + channels]
     }
 
-    pub fn set_pixel(&mut self, x: usize, y: usize, color: &Color) -> Result<(), Error> {
+    pub fn set_pixel(&mut self, point: &Point, color: &Color) -> Result<(), Error> {
         let channels = self.colorspace.channels();
-        let pixel = self.get_mut_pixel(x, y);
+        let pixel = self.get_mut_pixel(point);
         for i in 0..channels {
             pixel[i] = color[i];
         }
@@ -184,13 +180,15 @@ impl Index<Index2D> for Image {
     type Output = [u8];
 
     fn index(&self, (x, y): Index2D) -> &Self::Output {
-        self.get_pixel(x, y)
+        let point = Point::new(x, y);
+        self.get_pixel(&point)
     }
 }
 
 impl IndexMut<Index2D> for Image {
     fn index_mut(&mut self, (x, y): Index2D) -> &mut Self::Output {
-        self.get_mut_pixel(x, y)
+        let point = Point::new(x, y);
+        self.get_mut_pixel(&point)
     }
 }
 
@@ -207,14 +205,16 @@ impl Index<Index3D> for Image {
     type Output = u8;
 
     fn index(&self, (x, y, c): Index3D) -> &Self::Output {
-        let pixel = self.get_pixel(x, y);
+        let point = Point::new(x, y);
+        let pixel = self.get_pixel(&point);
         &pixel[c]
     }
 }
 
 impl IndexMut<Index3D> for Image {
     fn index_mut(&mut self, (x, y, c): Index3D) -> &mut Self::Output {
-        let pixel = self.get_mut_pixel(x, y);
+        let point = Point::new(x, y);
+        let pixel = self.get_mut_pixel(&point);
         &mut pixel[c]
     }
 }

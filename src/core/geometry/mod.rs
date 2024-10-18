@@ -1,2 +1,3 @@
-mod point;
-mod shape;
+pub mod point;
+pub mod shape;
+
