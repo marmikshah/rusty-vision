@@ -1,6 +1,7 @@
 use std::io::{self, ErrorKind};
 
 #[derive(Debug)]
+#[allow(clippy::enum_variant_names)]
 pub enum Error {
     IOError(io::Error),
     ImageDecodeError(io::Error),

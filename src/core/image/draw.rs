@@ -42,10 +42,8 @@ pub trait Drawable<T> {
 
 impl Drawable<RectParams> for Image {
     fn draw(&mut self, params: &RectParams) -> Result<(), Error> {
-        let border_width = match params.border_width {
-            Some(value) => value,
-            None => 0,
-        };
+        let border_width = params.border_width.unwrap_or_default();
+        
 
         dbg!(params.shape);
         // TODO: Implement fill
@@ -79,7 +77,7 @@ impl Drawable<RectParams> for Image {
 
                 // Top Edge
                 let top = Point::new(
-                    x_top_left + i - (border_width / 2) as usize,
+                    x_top_left + i - (border_width / 2),
                     (y_top_left as i32 + k) as usize,
                 );
                 dbg!(top);
@@ -88,7 +86,7 @@ impl Drawable<RectParams> for Image {
                 // Left Side
                 let left = Point::new(
                     (x_top_left as i32 + k) as usize,
-                    y_top_left + i - (border_width / 2 as usize),
+                    y_top_left + i - (border_width / 2),
                 );
                 dbg!(left);
                 self.set_pixel(&left, &params.color)?;
@@ -96,14 +94,14 @@ impl Drawable<RectParams> for Image {
                 // Right Edge
                 let right = Point::new(
                     ((x_top_left + params.shape.width) as i32 - k) as usize,
-                    y_top_left + i - (border_width / 2) as usize,
+                    y_top_left + i - (border_width / 2),
                 );
                 dbg!(right);
                 self.set_pixel(&right, &params.color)?;
 
                 // Bottom Edge
                 let bottom = Point::new(
-                    x_top_left + i - (border_width / 2) as usize,
+                    x_top_left + i - (border_width / 2),
                     ((y_top_left + params.shape.height) as i32 - k) as usize,
                 );
                 dbg!(bottom);

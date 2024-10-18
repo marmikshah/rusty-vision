@@ -104,7 +104,7 @@ impl Image {
         dbg!(data.len());
 
         let image_shape = Shape::new(shape.width, shape.height, Some(self.colorspace.channels()));
-        Self::from_data(data, image_shape, self.colorspace.clone())
+        Self::from_data(data, image_shape, self.colorspace)
     }
 
     ///
@@ -184,7 +184,7 @@ impl Index<usize> for Image {
 ///
 impl IndexMut<usize> for Image {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.data[index as usize]
+        &mut self.data[index]
     }
 }
 

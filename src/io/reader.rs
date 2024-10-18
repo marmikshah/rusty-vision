@@ -7,16 +7,16 @@ use crate::{
 };
 
 pub trait Reader {
-    fn read(path: &String, codex: Codex) -> Result<Image, Error>;
+    fn read(path: &str, codex: Codex) -> Result<Image, Error>;
 }
 
 impl Reader for Image {
-    fn read(path: &String, codex: Codex) -> Result<Image, Error> {
+    fn read(path: &str, codex: Codex) -> Result<Image, Error> {
         let mut file = File::open(path)?;
 
         match codex {
             Codex::PNG => {
-                return Ok(decode(&mut file)?);
+                Ok(decode(&mut file)?)
             }
             Codex::JPG => todo!(),
         }

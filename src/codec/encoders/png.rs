@@ -36,17 +36,16 @@ pub fn encode(image: &crate::core::image::Image) -> Result<Vec<u8>, crate::error
     let ihdr_chunk = create_chunk(b"IHDR", &ihdr);
     png_data.extend_from_slice(&ihdr_chunk);
 
-    let mut raw_data =
-        Vec::with_capacity((1 + image.width() * 3) as usize * image.height() as usize);
+    let mut raw_data = Vec::with_capacity((1 + image.width() * 3) * image.height());
     // y = 0, idx = 0 .. 512 * 3 (Gets the first row of all 3 channels)
     for y in 0..image.height() {
         raw_data.push(0);
 
-        let start: usize = (y * image.width() * 3) as usize;
-        let end: usize = ((y + 1) * image.width() * 3) as usize;
+        let start: usize = y * image.width() * 3;
+        let end: usize = (y + 1) * image.width() * 3;
 
         // Take one row of all three channels.
-        raw_data.extend_from_slice(&image.slice(start, end))
+        raw_data.extend_from_slice(image.slice(start, end))
     }
 
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());

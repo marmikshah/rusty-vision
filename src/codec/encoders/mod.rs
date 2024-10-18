@@ -11,7 +11,7 @@ pub trait Encoder {
 impl Encoder for Image {
     fn encode(&self, codec: Codex) -> Result<Vec<u8>, crate::error::Error> {
         match codec {
-            Codex::PNG => png::encode(&self),
+            Codex::PNG => png::encode(self),
             Codex::JPG => todo!(),
         }
     }

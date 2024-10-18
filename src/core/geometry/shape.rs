@@ -7,10 +7,8 @@ pub struct Shape {
 
 impl Shape {
     pub fn new(width: usize, height: usize, ndim: Option<usize>) -> Shape {
-        let ndim = match ndim {
-            Some(value) => value,
-            None => 1,
-        };
+        let ndim = ndim.unwrap_or(1);
+
         Shape {
             width,
             height,

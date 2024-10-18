@@ -3,6 +3,7 @@ use std::ops::Index;
 use super::image::Image;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum ColorSpace {
     RGB,
     RGBA,
@@ -33,9 +34,11 @@ impl ColorSpace {
     }
 
     pub fn can_convert_to(&self, color_space: &ColorSpace) -> bool {
-        return color_space != self;
+        color_space != self
     }
 
+    // TODO
+    #[allow(unused_variables)]
     pub fn convert_to(&self, image: &Image, color_space: &ColorSpace) -> Result<(), ()> {
         if !self.can_convert_to(color_space) {
             Err(())

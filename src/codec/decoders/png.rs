@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::{self, Read};
 use std::vec;
 
-use crate::core::color::{self, ColorSpace};
+use crate::core::color::ColorSpace;
 use crate::core::geometry::shape::Shape;
 use crate::core::image::Image;
 use crate::error::Error;
