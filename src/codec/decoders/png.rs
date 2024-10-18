@@ -5,6 +5,7 @@ use std::io::{self, Read};
 use std::vec;
 
 use crate::core::color::{self, ColorSpace};
+use crate::core::geometry::shape::Shape;
 use crate::core::image::Image;
 use crate::error::Error;
 
@@ -76,7 +77,10 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
                 break 'outer;
             }
             value => {
-                panic!("Block type {} decoding has not been implemented", String::from_utf8_lossy(value));
+                panic!(
+                    "Block type {} decoding has not been implemented",
+                    String::from_utf8_lossy(value)
+                );
             }
         }
     }
@@ -117,10 +121,8 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
         }
     }
 
-    Ok(Image::from_data(
-        data,
-        width as usize,
-        height as usize,
-        ColorSpace::RGBA,
-    ))
+    // TODO: Change to implicit ndim
+    let shape = Shape::new(width as usize, height as usize, Some(4));
+
+    Ok(Image::from_data(data, shape, ColorSpace::RGBA))
 }
