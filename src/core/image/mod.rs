@@ -89,6 +89,24 @@ impl Image {
         self.shape.size()
     }
 
+    pub fn crop(&self, topleft: Point, shape: Shape) -> Self {
+        let bottomright = topleft + shape;
+
+        let mut data = Vec::new();
+        for hindex in topleft.x..bottomright.x {
+            for vindex in topleft.y..bottomright.y {
+                for cindex in 0..self.shape.ndim {
+                    data.push(self[(hindex, vindex, cindex)]);
+                }
+            }
+        }
+
+        dbg!(data.len());
+
+        let image_shape = Shape::new(shape.width, shape.height, Some(self.colorspace.channels()));
+        Self::from_data(data, image_shape, self.colorspace.clone())
+    }
+
     ///
     /// Calculates the 1D Index based on the provided (x, y)
     /// # Arguments

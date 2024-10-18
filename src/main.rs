@@ -14,8 +14,6 @@ use error::Error;
 use io::writer::Writer;
 
 fn main() -> Result<(), Error> {
-    // Create a new blank (mutable) image
-
     let shape = Shape::new(1920, 1080, Some(3));
     let mut image = Image::new(shape, core::color::ColorSpace::RGB);
 
@@ -26,5 +24,7 @@ fn main() -> Result<(), Error> {
 
     image.write("output.png".to_string(), codec::Codex::PNG)?;
 
+    let crop = image.crop(topleft, rectshape);
+    crop.write("cropped.png".to_string(), codec::Codex::PNG)?;
     Ok(())
 }

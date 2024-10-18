@@ -2,7 +2,7 @@ use std::ops::Index;
 
 use super::image::Image;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum ColorSpace {
     RGB,
     RGBA,
