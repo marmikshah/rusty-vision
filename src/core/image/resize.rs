@@ -1,46 +1,36 @@
 #![allow(dead_code)]
-use crate::{core::image::Image, error::Error};
+use crate::{
+    core::{geometry::shape::Shape, image::Image},
+    error::Error,
+};
 
-#[derive(Debug)]
-pub enum ResizeMethod {
-    NearestNeighbors,
-    Bilinear,
-    Bicubic,
+#[derive(Default)]
+pub struct NearestNeighborParams;
+
+#[derive(Default)]
+pub struct BiCubicParams;
+
+#[derive(Debug, Default)]
+pub struct BiLinearParams;
+
+pub trait Resizable<T> {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error>;
 }
 
-pub trait Resize {
-    fn resize(
-        &mut self,
-        new_width: u32,
-        new_height: u32,
-        method: ResizeMethod,
-    ) -> Result<(), Error>;
-}
-
-impl Resize for Image {
-    fn resize(
-        &mut self,
-        new_width: u32,
-        new_height: u32,
-        method: ResizeMethod,
-    ) -> Result<(), Error> {
-        match method {
-            ResizeMethod::NearestNeighbors => resize_nearest_neighbors(self, new_width, new_height),
-            ResizeMethod::Bilinear => resize_bilinear(self, new_width, new_height),
-            ResizeMethod::Bicubic => resize_bicubic(self, new_width, new_height),
-        }
-        Ok(())
+impl Resizable<NearestNeighborParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
     }
 }
 
-fn resize_nearest_neighbors(image: &mut Image, new_width: u32, new_height: u32) {
-    todo!()
+impl Resizable<BiCubicParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
+    }
 }
 
-fn resize_bilinear(image: &mut Image, new_width: u32, new_height: u32) {
-    todo!()
-}
-
-fn resize_bicubic(image: &mut Image, new_width: u32, new_height: u32) {
-    todo!()
+impl Resizable<BiLinearParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
+    }
 }

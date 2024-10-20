@@ -1,5 +1,7 @@
 pub mod draw;
 pub mod traits;
+pub mod resize;
+mod image_impl;
 
 use crate::core::color::{Color, ColorSpace};
 use crate::core::geometry::shape::Shape;

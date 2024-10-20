@@ -4,8 +4,10 @@ mod core;
 mod error;
 mod io;
 
+use core::color::Color;
 use core::geometry::point::Point;
 use core::geometry::shape::Shape;
+use core::image::draw::CircleParams;
 use core::image::draw::RectParams;
 use core::image::traits::*;
 use core::image::Image;
@@ -19,8 +21,22 @@ fn main() -> Result<(), Error> {
 
     let topleft = Point::new(100, 100);
     let rectshape = Shape::new(100, 100, None);
-    let params = RectParams::new(topleft, rectshape, Some(5));
+    let params = RectParams::new(
+        topleft,
+        rectshape,
+        Color::new(20, 150, 20, 1.0),
+        Some(10),
+        Some(0.0),
+        None,
+    );
     image.draw(&params)?;
+
+    let center = Point::new(500, 500);
+    let color = Color::new(10, 250, 20, 1.0);
+    let fill = Color::new(132, 18, 28, 1.0);
+    let circle = CircleParams::new(center, 20, color, Some(fill));
+    // let circle = CircleParams::new(center, 20, color, None);
+    image.draw(&circle)?;
 
     image.write("output.png".to_string(), codec::Codex::PNG)?;
 
