@@ -5,7 +5,6 @@ use super::draw::{CircleParams, Drawable, RectParams};
 use super::Image;
 use crate::core::geometry::point::Point;
 use crate::error::Error;
-use log::debug;
 
 impl Drawable<RectParams> for Image {
     ///
@@ -115,18 +114,16 @@ impl Drawable<CircleParams> for Image {
             ];
 
             for pair in symmetric {
-                match params.fill_color {
-                    Some(value) => {
-                        let mut start = pair[0].clone();
-                        let end = pair[1].clone();
-                        while start.x < end.x - 1 {
-                            start.x += 1;
-                            dbg!(start);
-                            self.set_pixel(&start, &value)?;
-                        }
+                if let Some(color) = params.fill_color {
+                    let mut start = pair[0].clone();
+                    let end = pair[1].clone();
+                    while start.x < end.x - 1 {
+                        start.x += 1;
+                        dbg!(start);
+                        self.set_pixel(&start, &color)?;
                     }
-                    None => {}
                 }
+
                 self.set_pixel(&pair[0], &params.color)?;
                 self.set_pixel(&pair[1], &params.color)?;
             }
