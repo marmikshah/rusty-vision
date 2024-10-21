@@ -1,8 +1,8 @@
 # Rusty Vision
 
-[![Crates.io](https://img.shields.io/crates/v/your_crate.svg)](https://crates.io/crates/rusty-vision)
-[![Docs.rs](https://docs.rs/your_crate/badge.svg)](https://docs.rs/rusty-vision)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your_username/your_repo/ci.yml)](https://github.com/marmikshah/rusty-vision/actions)
+[![Crates.io](https://img.shields.io/crates/v/rusty-vision.svg)](https://crates.io/crates/rusty-vision)
+[![Docs.rs](https://docs.rs/rusty-vision/badge.svg)](https://docs.rs/rusty-vision)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/marmikshah/rusty-vision/publish.yml)](https://github.com/marmikshah/rusty-vision/actions)
 
 ## Overview
 
@@ -82,5 +82,4 @@ Save as PNG (Currently only PNG supported)
 
 ```rust
 image.write("output.png".to_string(), Codex::PNG)?;
-
 ```

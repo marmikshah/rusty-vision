@@ -11,6 +11,8 @@ jobs:
 
     name: Publish and Release
 
+    environment: Publish
+
     steps:
       - uses: actions/checkout@v3
         with:
