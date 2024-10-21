@@ -39,18 +39,21 @@ cargo add rusty-vision
 Import the core Image module and basic traits
 
 ```rust
-use rusty_vision::core::image::Image;
-use rusty_vision::core::image::traits::*;
+
+use rusty_vision as rv;
+use rv::core::image::Image;
+use rv::core::image::traits::*;
 
 // Useful structures for geometric operations
-use rusty_vision::core::geometry::*;
+use rv::core::geometry::point::Point;
+use rv::core::geometry::shape::Shape;
 
 // Structures and Implenetations for Colors and Channels.
-use rusty_vision::core::color::{ColorSpace, Color};
+use rv::core::color::{ColorSpace, Color};
 
 // Image Encoding/Decoding
-use rusty_vision::codec::Codex;
-use io::writer::Writer;
+use rv::codec::Codex;
+use rv::io::writer::Writer;
 ```
 
 Create a blank image with black background.
@@ -69,17 +72,20 @@ let topleft = Point::new(10, 10);
 
 let config = RectParams::new(
     topleft,
-    rectshape,
+    rect,
     Color::new(20, 150, 20, 1.0),
     Some(10),
     Some(0.0),
-    None
-)
-image.draw(&params)?;
+    None,
+);
+
+// NOTE: `unwrap` can panic
+image.draw(&config).unwrap();
 ```
 
 Save as PNG (Currently only PNG supported)
 
 ```rust
-image.write("output.png".to_string(), Codex::PNG)?;
+// NOTE: `unwrap` can panic
+image.write("output.png".to_string(), Codex::PNG).unwrap();
 ```
