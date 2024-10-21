@@ -1,7 +1,15 @@
 [package]
 name = "rusty-vision"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
+authors = ["Marmik SHah <marmikshah@icloud.com>"]
+description = "A basic Image manipulation library."
+readme = "README.md"
+repository = "https://github.com/marmikshah/rusty-vision"
+homepage = "https://github.com/marmikshah/rusty-vision"
+keywords = ["image-processing", "computer-vision"]
+license = "MIT"
+license-file = "LICENSE"
 
 [dependencies]
 crc32fast = "1.4.2"

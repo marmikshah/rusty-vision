@@ -1,0 +1,39 @@
+name: Publish to Cargo and Release Binaries
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    name: Publish and Release
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Run publish-action
+        uses: tu6ge/publish-action@v0.4.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
