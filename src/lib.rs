@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-mod codec;
-mod core;
-mod error;
-mod io;
+pub mod codec;
+pub mod core;
+pub mod error;
+pub mod io;
