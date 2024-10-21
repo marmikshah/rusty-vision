@@ -16,14 +16,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      - name: Build
-        run: cargo build --release
-
       - name: Run publish-action
         uses: tu6ge/publish-action@v0.4.5
         env:
@@ -37,3 +29,5 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
