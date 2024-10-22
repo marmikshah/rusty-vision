@@ -68,20 +68,21 @@ let mut image = Image::new(shape, ColorSpace::RGB);
 Draw a rect using the `Drawable` trait.
 
 ```rust
-// `ndim` can be None
-let rect = Shape::new(100, 100, None);
-let topleft = Point::new(10, 10);
-
+// Create Rect configuration
 let config = RectParams::new(
-    topleft,
-    rect,
+    Point { x: 10, y: 10 },
+    Shape {
+        width: 100,
+        height: 100,
+        ndim: 1,
+    },
     Color::new(20, 150, 20, 1.0),
     Some(10),
-    Some(0.0), 
+    Some(0.0),
     None,
 );
 
-// NOTE: `unwrap` can panic
+// Draw
 image.draw(&config).unwrap();
 ```
 
