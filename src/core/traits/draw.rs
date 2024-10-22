@@ -1,7 +1,10 @@
 use derive_new::new;
 
 use crate::{
-    core::{color::Color, geometry::point::Point, geometry::shape::Shape},
+    core::{
+        color::Color,
+        geometry::{Point, Shape},
+    },
     error::Error,
 };
 

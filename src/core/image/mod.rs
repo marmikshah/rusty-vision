@@ -1,16 +1,11 @@
-pub mod draw;
-pub mod traits;
-pub mod resize;
 mod image_impl;
-
 use crate::core::color::{Color, ColorSpace};
-use crate::core::geometry::shape::Shape;
 use std::ops::{Index, IndexMut};
 
 use crate::error::Error;
 use log::debug;
 
-use super::geometry::point::Point;
+use super::geometry::{Point, Shape};
 use super::types::*;
 
 pub struct Image {
@@ -71,6 +66,10 @@ impl Image {
         }
     }
 
+    pub fn swap(&mut self, idx_a: usize, idx_b: usize) {
+        self.data.swap(idx_a, idx_b);
+    }
+
     pub fn slice(&self, start: usize, end: usize) -> &[u8] {
         &self.data[start..end]
     }
@@ -111,22 +110,40 @@ impl Image {
 
     ///
     /// Calculates the 1D Index based on the provided (x, y)
+    /// Just wraps `get_index_from_xy` for sake of convenience
     /// # Arguments
     ///
-    /// * `x` - The x coordinate
-    /// * `y` - The y coordinate
+    /// * `Point` - Point containing desired x and y
     ///
     /// # Returns
     ///
-    /// * Option<usize> containing Index if within bounds,
-    ///     otherwise None
+    /// * Result<usize> containing Index if within bounds,
+    ///     otherwise Error
     ///
-    pub fn get_index(&self, point: &Point) -> usize {
-        let index = point.point_to_index(&self.shape);
-        if index >= self.size() {
-            panic!("{point:?} out of bounds!")
+    pub fn get_index(&self, point: &Point) -> Result<usize, Error> {
+        self.get_index_from_xy(point.x, point.y)
+    }
+
+    /// Compute 1D Index (row-major) when provided with
+    /// the x, y coordinate, width and channel value.
+    ///
+    /// # Arguments
+    ///
+    /// * `x` - The x coordinate (should be between 0 - width of Image)
+    /// * `y` - The y coordinate (should be between 0 - height of Image)
+    ///
+    /// # Returns
+    ///
+    /// * Result<usize> containing Index if within bounds,
+    ///     otherwise Error
+    ///
+    pub fn get_index_from_xy(&self, x: usize, y: usize) -> Result<usize, Error> {
+        if x >= self.width() || y >= self.height() {
+            Err(Error::IndexOutOfBounds("Invalid coordinates".to_string()))
+        } else {
+            let value = (y * self.width() + x) * self.shape.ndim;
+            Ok(value)
         }
-        index
     }
 
     ///
@@ -143,14 +160,14 @@ impl Image {
     ///
     pub fn get_pixel(&self, point: &Point) -> &[u8] {
         let channels = self.colorspace.channels();
-        let index = self.get_index(point);
+        let index = self.get_index(point).unwrap();
         &self.data[index..index + channels]
     }
 
     /// Same as `get_pixel` but just a mutable reference
     pub fn get_mut_pixel(&mut self, point: &Point) -> &mut [u8] {
         let channels = self.colorspace.channels();
-        let index = self.get_index(point);
+        let index = self.get_index(point).unwrap();
         &mut self.data[index..index + channels]
     }
 

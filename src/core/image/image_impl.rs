@@ -1,11 +1,13 @@
 /**
  * Implementation of common traits for Image type
  */
-use super::draw::{CircleParams, Drawable, RectParams};
 use super::Image;
-use crate::core::geometry::point::Point;
+use crate::core::geometry::{Point, Shape};
+
+use crate::core::traits::*;
 use crate::error::Error;
 
+/* ------------------ DRAWING TRAIT ------------------ */
 impl Drawable<RectParams> for Image {
     ///
     /// Draw a rectangle on the Image
@@ -141,3 +143,59 @@ impl Drawable<CircleParams> for Image {
         Ok(())
     }
 }
+/* ------------------ ------- ----- ------------------ */
+
+/* ------------------ RESIZE TRAIT ------------------ */
+impl Resizable<NearestNeighborParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
+    }
+}
+
+impl Resizable<BiCubicParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
+    }
+}
+
+impl Resizable<BiLinearParams> for Image {
+    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
+        todo!()
+    }
+}
+/* ------------------ ------ ----- ------------------ */
+
+/* ------------------ ROTATION TRAIT ------------------ */
+
+impl Rotatable<i32> for Image {
+    fn rotate(&mut self, value: i32) -> Result<(), Error> {
+        // Custom rotation by degrees.
+        todo!()
+    }
+}
+
+impl Rotatable<RotationType> for Image {
+    fn rotate(&mut self, value: RotationType) -> Result<(), Error> {
+        match value {
+            RotationType::CLOCKWISE90 => todo!(),
+            RotationType::CLOCKWISE180 | RotationType::ANTICLICKWISE180 => {
+                for y in 0..self.height() {
+                    for x in 0..self.width() / 2 {
+                        for c in 0..self.colorspace.channels() {
+                            let idx_a = self.get_index_from_xy(x, y).unwrap() + c;
+                            let idx_b =
+                                self.get_index_from_xy(self.width() - x - 1, y).unwrap() + c;
+
+                            self.swap(idx_a, idx_b);
+                        }
+                    }
+                }
+                Ok(())
+            }
+            RotationType::CLOCKWISE270 => todo!(),
+            RotationType::ANTICLOCKWISE90 => todo!(),
+            RotationType::ANTICLICKWISE270 => todo!(),
+        }
+    }
+}
+/* ------------------ -------- ----- ------------------ */

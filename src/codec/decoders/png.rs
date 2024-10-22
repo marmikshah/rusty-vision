@@ -5,7 +5,7 @@ use std::io::{self, Read};
 use std::vec;
 
 use crate::core::color::ColorSpace;
-use crate::core::geometry::shape::Shape;
+use crate::core::geometry::Shape;
 use crate::core::image::Image;
 use crate::error::Error;
 

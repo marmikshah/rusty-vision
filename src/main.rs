@@ -5,12 +5,9 @@ mod error;
 mod io;
 
 use core::color::Color;
-use core::geometry::point::Point;
-use core::geometry::shape::Shape;
-use core::image::draw::CircleParams;
-use core::image::draw::RectParams;
-use core::image::traits::*;
+use core::geometry::{Point, Shape};
 use core::image::Image;
+use core::traits::*;
 
 use error::Error;
 use io::writer::Writer;
@@ -39,6 +36,9 @@ fn main() -> Result<(), Error> {
     image.draw(&circle)?;
 
     image.write("output.png".to_string(), codec::Codex::PNG)?;
+
+    image.rotate(RotationType::CLOCKWISE180)?;
+    image.write("rotated.png".to_string(), codec::Codex::PNG)?;
 
     let crop = image.crop(topleft, rectshape);
     crop.write("cropped.png".to_string(), codec::Codex::PNG)?;

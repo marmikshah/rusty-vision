@@ -1,12 +1,10 @@
 use rusty_vision as rv;
 
-use rv::core::image::draw::RectParams;
-use rv::core::image::traits::*;
 use rv::core::image::Image;
+use rv::core::traits::*;
 
 // Useful structures for geometric operations
-use rv::core::geometry::point::Point;
-use rv::core::geometry::shape::Shape;
+use rv::core::geometry::{Point, Shape};
 
 // Structures and Implenetations for Colors and Channels.
 use rv::core::color::{Color, ColorSpace};
