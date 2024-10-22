@@ -1,5 +1,6 @@
 pub mod color;
 pub mod geometry;
-pub mod image;
-pub mod types;
 pub mod traits;
+
+pub use color::{Color, ColorSpace};
+pub use geometry::{Point, Shape};

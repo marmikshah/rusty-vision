@@ -6,8 +6,8 @@ use std::vec;
 
 use crate::core::color::ColorSpace;
 use crate::core::geometry::Shape;
-use crate::core::image::Image;
 use crate::error::Error;
+use crate::types::Image;
 
 pub fn decode(file: &mut File) -> Result<Image, Error> {
     let mut signature = [0; 8];

@@ -1,7 +1,7 @@
 use rusty_vision as rv;
 
-use rv::core::image::Image;
 use rv::core::traits::*;
+use rv::types::Image;
 
 // Useful structures for geometric operations
 use rv::core::geometry::{Point, Shape};

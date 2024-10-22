@@ -3,11 +3,12 @@ mod codec;
 mod core;
 mod error;
 mod io;
+mod types;
 
 use core::color::Color;
 use core::geometry::{Point, Shape};
-use core::image::Image;
 use core::traits::*;
+use types::Image;
 
 use error::Error;
 use io::writer::Writer;

@@ -2,8 +2,8 @@ use std::fs::File;
 
 use crate::{
     codec::{decoders::png::decode, Codex},
-    core::image::Image,
     error::Error,
+    types::Image,
 };
 
 pub trait Reader {
@@ -15,9 +15,7 @@ impl Reader for Image {
         let mut file = File::open(path)?;
 
         match codex {
-            Codex::PNG => {
-                Ok(decode(&mut file)?)
-            }
+            Codex::PNG => Ok(decode(&mut file)?),
             Codex::JPG => todo!(),
         }
     }

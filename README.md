@@ -1,5 +1,7 @@
 # Rusty Vision
 
+:bangbang: **NOTE: This is purely experimental and is not intended to be used in production.**  
+
 [![Crates.io](https://img.shields.io/crates/v/rusty-vision.svg)](https://crates.io/crates/rusty-vision)
 [![Docs.rs](https://docs.rs/rusty-vision/badge.svg)](https://docs.rs/rusty-vision)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/marmikshah/rusty-vision/publish.yml)](https://github.com/marmikshah/rusty-vision/actions)
@@ -8,7 +10,7 @@
 
 A basic image processing and manipulation library with the aim to provide OpenCV like functions in Rust. 
 
-:bangbang: **NOTE: This is purely experimental and is not intended to be used in production.**
+:construction: **NOTE: Since the repo is still in very early phase, please expect breaking changes with new releases.**
 
 ## Features
 
@@ -43,15 +45,13 @@ Full code at [draw-rect.rs](./examples/draw-rect.rs).
 ```rust
 
 use rusty_vision as rv;
-use rv::core::image::Image;
-use rv::core::image::traits::*;
+use rv::types::Image;
+use rv::core::traits::*;
 
-// Useful structures for geometric operations
-use rv::core::geometry::point::Point;
-use rv::core::geometry::shape::Shape;
+use core::geometry::{Point, Shape};
 
 // Structures and Implenetations for Colors and Channels.
-use rv::core::color::{ColorSpace, Color};
+use rv::core::{ColorSpace, Color};
 
 // Image Encoding/Decoding
 use rv::codec::Codex;
