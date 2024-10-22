@@ -38,6 +38,8 @@ cargo add rusty-vision
 
 Import the core Image module and basic traits
 
+Full code at [draw-rect.rs](./examples/draw-rect.rs). 
+
 ```rust
 
 use rusty_vision as rv;
@@ -75,7 +77,7 @@ let config = RectParams::new(
     rect,
     Color::new(20, 150, 20, 1.0),
     Some(10),
-    Some(0.0),
+    Some(0.0), 
     None,
 );
 
