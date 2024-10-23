@@ -3,7 +3,7 @@ use std::fs::File;
 use crate::{
     codec::{decoders::png::decode, Codex},
     error::Error,
-    types::Image,
+    image::Image,
 };
 
 pub trait Reader {

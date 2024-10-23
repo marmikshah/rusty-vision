@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::types::Image;
+use crate::image::Image;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[allow(clippy::upper_case_acronyms)]

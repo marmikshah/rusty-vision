@@ -24,15 +24,15 @@
  *      number-of-channels: The total number of color channels.
  *              (For example, 3 for an RGB image and 4 for RGBA)
  */
-use crate::core::{Point, Shape};
 use std::ops::{Index, IndexMut};
 
 use log::debug;
 
-use super::aliases::*;
-use crate::core::traits::*;
-use crate::core::{Color, ColorSpace};
+use crate::color::{Color, ColorSpace};
 use crate::error::Error;
+use crate::geometry::{Point, Shape};
+use crate::traits::*;
+use crate::types::*;
 
 pub struct Image {
     shape: Shape,

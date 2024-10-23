@@ -1,21 +1,24 @@
 #![allow(dead_code)]
 mod codec;
-mod core;
+mod color;
 mod error;
+mod geometry;
+mod image;
 mod io;
+mod traits;
 mod types;
 
-use core::color::Color;
-use core::geometry::{Point, Shape};
-use core::traits::*;
-use types::Image;
+use color::{Color, ColorSpace};
+use geometry::{Point, Shape};
+use image::Image;
+use traits::*;
 
 use error::Error;
 use io::writer::Writer;
 
 fn main() -> Result<(), Error> {
     let shape = Shape::new(1920, 1080, Some(3));
-    let mut image = Image::new(shape, core::color::ColorSpace::RGB);
+    let mut image = Image::new(shape, ColorSpace::RGB);
 
     let topleft = Point::new(100, 100);
     let rectshape = Shape::new(100, 100, None);

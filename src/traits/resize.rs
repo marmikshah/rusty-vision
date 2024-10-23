@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::{core::geometry::Shape, error::Error};
+use crate::{error::Error, geometry::Shape};
 
 #[derive(Default)]
 pub struct NearestNeighborParams;
