@@ -43,15 +43,15 @@ Import the core Image module and basic traits
 Full code at [draw-rect.rs](./examples/draw-rect.rs). 
 
 ```rust
+// Core Image Structure and its traits
+use rv::image::Image;
+use rv::traits::*;
 
-use rusty_vision as rv;
-use rv::types::Image;
-use rv::core::traits::*;
-
-use core::geometry::{Point, Shape};
+// Useful structures for geometric operations
+use rv::geometry::{Point, Shape};
 
 // Structures and Implenetations for Colors and Channels.
-use rv::core::{ColorSpace, Color};
+use rv::color::{Color, ColorSpace};
 
 // Image Encoding/Decoding
 use rv::codec::Codex;
@@ -61,14 +61,19 @@ use rv::io::writer::Writer;
 Create a blank image with black background.
 
 ```rust
-let shape = Shape::new(1920, 1080, Some(3));
-let mut image = Image::new(shape, ColorSpace::RGB);
+let mut image = Image::new(
+    Shape {
+        width: 1920,
+        height: 1080,
+        ndim: 3,
+    },
+    ColorSpace::RGB,
+);
 ```
 
 Draw a rect using the `Drawable` trait.
 
 ```rust
-// Create Rect configuration
 let config = RectParams::new(
     Point { x: 10, y: 10 },
     Shape {
