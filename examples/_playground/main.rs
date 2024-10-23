@@ -1,20 +1,15 @@
 #![allow(dead_code)]
-mod codec;
-mod color;
-mod error;
-mod geometry;
-mod image;
-mod io;
-mod traits;
-mod types;
 
-use color::{Color, ColorSpace};
-use geometry::{Point, Shape};
-use image::Image;
-use traits::*;
+use rusty_vision as rv;
 
-use error::Error;
-use io::writer::Writer;
+use rv::color::{Color, ColorSpace};
+use rv::geometry::{Point, Shape};
+use rv::image::Image;
+use rv::traits::*;
+
+use rv::codec::Codex;
+use rv::error::Error;
+use rv::io::writer::Writer;
 
 fn main() -> Result<(), Error> {
     let shape = Shape::new(1920, 1080, Some(3));
@@ -39,12 +34,12 @@ fn main() -> Result<(), Error> {
     // let circle = CircleParams::new(center, 20, color, None);
     image.draw(&circle)?;
 
-    image.write("output.png".to_string(), codec::Codex::PNG)?;
+    image.write("output.png".to_string(), Codex::PNG)?;
 
     image.rotate(RotationType::CLOCKWISE180)?;
-    image.write("rotated.png".to_string(), codec::Codex::PNG)?;
+    image.write("rotated.png".to_string(), Codex::PNG)?;
 
     let crop = image.crop(topleft, rectshape);
-    crop.write("cropped.png".to_string(), codec::Codex::PNG)?;
+    crop.write("cropped.png".to_string(), Codex::PNG)?;
     Ok(())
 }
