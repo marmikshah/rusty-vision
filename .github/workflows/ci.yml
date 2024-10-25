@@ -39,7 +39,7 @@ jobs:
         run: cargo install --locked cargo-about
 
       - name: cargo-about generate licenses
-        run: cargo about generate --workspace --all-features
+        run: cargo about generate --workspace --all-features about.hbs > licenses.html
 
   fmt:
     name: Rustfmt
