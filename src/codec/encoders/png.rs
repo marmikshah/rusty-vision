@@ -1,9 +1,10 @@
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 
+use crate::image::Image;
 use std::io::Write;
 
-pub fn encode(image: &crate::core::image::Image) -> Result<Vec<u8>, crate::error::Error> {
+pub fn encode(image: &Image) -> Result<Vec<u8>, crate::error::Error> {
     let png_signature = b"\x89PNG\r\n\x1a\n";
     let mut png_data = Vec::new();
     png_data.extend_from_slice(png_signature);

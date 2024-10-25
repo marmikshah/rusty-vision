@@ -2,7 +2,7 @@ mod jpeg;
 mod png;
 
 use super::Codex;
-use crate::core::image::Image;
+use crate::image::Image;
 
 pub trait Encoder {
     fn encode(&self, codec: Codex) -> Result<Vec<u8>, crate::error::Error>;

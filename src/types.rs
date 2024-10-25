@@ -1,4 +1,4 @@
-use super::image::Image;
+use crate::image::Image;
 
 pub type Index4D = (usize, usize, usize, usize);
 pub type Index3D = (usize, usize, usize);

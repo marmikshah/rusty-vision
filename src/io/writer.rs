@@ -3,7 +3,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use crate::{codec::encoders::Encoder, codec::Codex, core::image::Image, error};
+use crate::{codec::encoders::Encoder, codec::Codex, error, image::Image};
 
 pub trait Writer {
     fn write(&self, path: String, codec: Codex) -> Result<(), error::Error>;

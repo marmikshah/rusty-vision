@@ -1,5 +1,7 @@
 # Rusty Vision
 
+:bangbang: **NOTE: This is purely experimental and is not intended to be used in production.**  
+
 [![Crates.io](https://img.shields.io/crates/v/rusty-vision.svg)](https://crates.io/crates/rusty-vision)
 [![Docs.rs](https://docs.rs/rusty-vision/badge.svg)](https://docs.rs/rusty-vision)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/marmikshah/rusty-vision/publish.yml)](https://github.com/marmikshah/rusty-vision/actions)
@@ -8,7 +10,7 @@
 
 A basic image processing and manipulation library with the aim to provide OpenCV like functions in Rust. 
 
-:bangbang: **NOTE: This is purely experimental and is not intended to be used in production.**
+:construction: **NOTE: Since the repo is still in very early phase, please expect breaking changes with new releases.**
 
 ## Features
 
@@ -41,17 +43,15 @@ Import the core Image module and basic traits
 Full code at [draw-rect.rs](./examples/draw-rect.rs). 
 
 ```rust
-
-use rusty_vision as rv;
-use rv::core::image::Image;
-use rv::core::image::traits::*;
+// Core Image Structure and its traits
+use rv::image::Image;
+use rv::traits::*;
 
 // Useful structures for geometric operations
-use rv::core::geometry::point::Point;
-use rv::core::geometry::shape::Shape;
+use rv::geometry::{Point, Shape};
 
 // Structures and Implenetations for Colors and Channels.
-use rv::core::color::{ColorSpace, Color};
+use rv::color::{Color, ColorSpace};
 
 // Image Encoding/Decoding
 use rv::codec::Codex;
@@ -61,27 +61,33 @@ use rv::io::writer::Writer;
 Create a blank image with black background.
 
 ```rust
-let shape = Shape::new(1920, 1080, Some(3));
-let mut image = Image::new(shape, ColorSpace::RGB);
+let mut image = Image::new(
+    Shape {
+        width: 1920,
+        height: 1080,
+        ndim: 3,
+    },
+    ColorSpace::RGB,
+);
 ```
 
 Draw a rect using the `Drawable` trait.
 
 ```rust
-// `ndim` can be None
-let rect = Shape::new(100, 100, None);
-let topleft = Point::new(10, 10);
-
 let config = RectParams::new(
-    topleft,
-    rect,
+    Point { x: 10, y: 10 },
+    Shape {
+        width: 100,
+        height: 100,
+        ndim: 1,
+    },
     Color::new(20, 150, 20, 1.0),
     Some(10),
-    Some(0.0), 
+    Some(0.0),
     None,
 );
 
-// NOTE: `unwrap` can panic
+// Draw
 image.draw(&config).unwrap();
 ```
 

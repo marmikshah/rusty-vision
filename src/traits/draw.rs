@@ -1,8 +1,9 @@
 use derive_new::new;
 
 use crate::{
-    core::{color::Color, geometry::point::Point, geometry::shape::Shape},
+    color::Color,
     error::Error,
+    geometry::{Point, Shape},
 };
 
 #[derive(Debug, Clone, Copy, new)]
