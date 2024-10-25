@@ -1,5 +1,5 @@
 # Ref: https://github.com/azriel91/peace/blob/main/.github/workflows/publish.yml
-name: Publish to Cargo and Release Binaries
+name: Release
 
 on:
   push:
