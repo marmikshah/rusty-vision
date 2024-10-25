@@ -30,10 +30,11 @@ use log::debug;
 
 use crate::color::{Color, ColorSpace};
 use crate::error::Error;
-use crate::geometry::{Point, Shape};
+use crate::geometry::{self, get_index_from_point_and_shape, Point, Shape};
 use crate::traits::*;
 use crate::types::*;
 
+#[derive(Debug, Clone)]
 pub struct Image {
     shape: Shape,
     data: Vec<u8>,
@@ -134,12 +135,13 @@ impl Image {
     ///     otherwise Error
     ///
     pub fn get_index_from_xy(&self, x: usize, y: usize) -> Result<usize, Error> {
-        if x >= self.width() || y >= self.height() {
-            Err(Error::IndexOutOfBounds("Invalid coordinates".to_string()))
-        } else {
-            let value = (y * self.width() + x) * self.shape.ndim;
-            Ok(value)
-        }
+        geometry::get_index_from_xywh(
+            x,
+            y,
+            self.width(),
+            self.height(),
+            self.colorspace.channels(),
+        )
     }
 
     ///
@@ -181,7 +183,7 @@ impl Image {
 /// Overriding [] for 1D indexing.
 ///
 /// # Returns an immutable reference to the requested Index
-///     value in `data` vector
+///     
 ///
 impl Index<usize> for Image {
     type Output = u8;
@@ -195,7 +197,7 @@ impl Index<usize> for Image {
 /// Overriding [] for 1D indexing.
 ///
 /// # Returns a mutable reference to the requested Index
-///     value in `data` vector
+///     
 ///
 impl IndexMut<usize> for Image {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
@@ -207,7 +209,7 @@ impl IndexMut<usize> for Image {
 /// Overriding [] for 2D indexing.
 ///
 /// # Returns an immutable reference to a given pixel
-///     The pixel
+///
 ///
 impl Index<Index2D> for Image {
     type Output = [u8];
@@ -420,27 +422,59 @@ impl Rotatable<i32> for Image {
 }
 
 impl Rotatable<RotationType> for Image {
+    ///
+    /// Perform in-place rotation.
+    ///
     fn rotate(&mut self, value: RotationType) -> Result<(), Error> {
-        match value {
-            RotationType::CLOCKWISE90 => todo!(),
-            RotationType::CLOCKWISE180 | RotationType::ANTICLICKWISE180 => {
-                for y in 0..self.height() {
-                    for x in 0..self.width() / 2 {
-                        for c in 0..self.colorspace.channels() {
-                            let idx_a = self.get_index_from_xy(x, y).unwrap() + c;
-                            let idx_b =
-                                self.get_index_from_xy(self.width() - x - 1, y).unwrap() + c;
+        let new_shape = match value {
+            RotationType::Clockwise90
+            | RotationType::Anticlockwise270
+            | RotationType::Clockwise270
+            | RotationType::Anticlockwise90 => Shape {
+                width: self.height(),
+                height: self.width(),
+                ndim: self.shape.ndim,
+            },
+            RotationType::Clockwise180 | RotationType::Anticlockwise180 => self.shape.clone(),
+            RotationType::Custom(_) => todo!(),
+        };
 
-                            self.swap(idx_a, idx_b);
-                        }
+        if new_shape == self.shape {
+            for x in 0..self.width() / 2 {
+                for y in 0..self.height() {
+                    let p1 = Point::new(x, y);
+                    let p2 = p1.relocate(&self.shape, value.degree());
+
+                    let idx_a = self.get_index(&p1).unwrap();
+                    let idx_b = get_index_from_point_and_shape(p2, &new_shape).unwrap();
+
+                    for c in 0..self.colorspace.channels() {
+                        self.swap(idx_a + c, idx_b + c);
                     }
                 }
-                Ok(())
             }
-            RotationType::CLOCKWISE270 => todo!(),
-            RotationType::ANTICLOCKWISE90 => todo!(),
-            RotationType::ANTICLICKWISE270 => todo!(),
+        } else {
+            // TODO: Improve to in-place
+            let mut rotated = vec![0; self.size()];
+            for x in 0..self.width() {
+                for y in 0..self.height() {
+                    let p1 = Point::new(x, y);
+                    let p2 = p1.relocate(&self.shape, value.degree());
+
+                    let idx_a = self.get_index(&p1).unwrap();
+                    let idx_b = get_index_from_point_and_shape(p2, &new_shape).unwrap();
+
+                    for c in 0..self.colorspace.channels() {
+                        rotated[idx_b + c] = self.data[idx_a + c];
+                    }
+                }
+            }
+
+            self.data = rotated;
+            self.shape = new_shape;
         }
+
+        Ok(())
     }
 }
 /* ------------------ -------- ----- ------------------ */
