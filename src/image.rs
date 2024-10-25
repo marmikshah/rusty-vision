@@ -435,7 +435,7 @@ impl Rotatable<RotationType> for Image {
                 height: self.width(),
                 ndim: self.shape.ndim,
             },
-            RotationType::Clockwise180 | RotationType::Anticlockwise180 => self.shape.clone(),
+            RotationType::Clockwise180 | RotationType::Anticlockwise180 => self.shape,
             RotationType::Custom(_) => todo!(),
         };
 
@@ -456,6 +456,7 @@ impl Rotatable<RotationType> for Image {
         } else {
             // TODO: Improve to in-place
             let mut rotated = vec![0; self.size()];
+            let ndim = self.shape.ndim;
             for x in 0..self.width() {
                 for y in 0..self.height() {
                     let p1 = Point::new(x, y);
@@ -464,9 +465,7 @@ impl Rotatable<RotationType> for Image {
                     let idx_a = self.get_index(&p1).unwrap();
                     let idx_b = get_index_from_point_and_shape(p2, &new_shape).unwrap();
 
-                    for c in 0..self.colorspace.channels() {
-                        rotated[idx_b + c] = self.data[idx_a + c];
-                    }
+                    rotated[idx_b..ndim + idx_b].copy_from_slice(&self.data[idx_a..ndim + idx_a]);
                 }
             }
 
