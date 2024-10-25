@@ -11,14 +11,14 @@ pub use shape::Shape;
 /// # Arguments
 ///
 /// * `x` - The x coordinate (should be between 0 - width)
-/// * `y` - The y coordinate (should be between 0 - heigh)
+/// * `y` - The y coordinate (should be between 0 - height)
 /// * `width` - The width of the x dimension
 /// * `height` - The height of the y dimension
 /// * `ndim` - The number of dimensions (ideally same as number of channels)
 ///
 /// # Returns
 ///
-/// * Result<usize> containing Index if within bounds,
+/// * usize containing Index if within bounds,
 ///     otherwise Error
 ///
 pub fn get_index_from_xywh(
@@ -43,12 +43,12 @@ pub fn get_index_from_xywh(
 /// # Arguments
 ///
 /// * `x` - The x coordinate (should be between 0 - width)
-/// * `y` - The y coordinate (should be between 0 - heigh)
+/// * `y` - The y coordinate (should be between 0 - height)
 /// * `shape` - The shape of the rect this point is currently in
 ///
 /// # Returns
 ///
-/// * Result<usize> containing Index if within bounds,
+/// * usize containing Index if within bounds,
 ///     otherwise Error
 ///
 pub fn get_index_from_xyshape(x: usize, y: usize, shape: &Shape) -> Result<usize, Error> {
@@ -65,7 +65,7 @@ pub fn get_index_from_xyshape(x: usize, y: usize, shape: &Shape) -> Result<usize
 ///
 /// # Returns
 ///
-/// * Result<usize> containing Index if within bounds,
+/// * usize containing Index if within bounds,
 ///     otherwise Error
 ///
 pub fn get_index_from_point_and_shape(point: Point, shape: &Shape) -> Result<usize, Error> {

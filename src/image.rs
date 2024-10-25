@@ -114,7 +114,7 @@ impl Image {
     ///
     /// # Returns
     ///
-    /// * Result<usize> containing Index if within bounds,
+    /// * usize containing Index if within bounds,
     ///     otherwise Error
     ///
     pub fn get_index(&self, point: &Point) -> Result<usize, Error> {
@@ -131,7 +131,7 @@ impl Image {
     ///
     /// # Returns
     ///
-    /// * Result<usize> containing Index if within bounds,
+    /// * usize containing Index if within bounds,
     ///     otherwise Error
     ///
     pub fn get_index_from_xy(&self, x: usize, y: usize) -> Result<usize, Error> {
