@@ -86,9 +86,7 @@ jobs:
         run: |
           cargo clippy \
             --workspace \
-            --features "cli error_reporting output_progress" \
             --fix \
-            --exclude peace_rt_model_web \
             -- -D warnings
 
         # Ideally we'd also run it for WASM, but:
