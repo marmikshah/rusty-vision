@@ -1,6 +1,6 @@
 [package]
 name = "rusty-vision"
-version = "0.0.1"
+version = "0.0.4"
 edition = "2021"
 authors = ["Marmik SHah <marmikshah@icloud.com>"]
 description = "A basic Image manipulation library."
