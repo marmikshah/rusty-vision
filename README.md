@@ -41,7 +41,7 @@ cargo add rusty-vision
 
 Import the core Image module and basic traits
 
-Full code at [draw-rect.rs](./examples/draw-rect.rs). 
+Full code at [01-basic](./examples/01-basic/)
 
 ```rust
 // Core Image Structure and its traits
