@@ -9,7 +9,6 @@ repository = "https://github.com/marmikshah/rusty-vision"
 homepage = "https://github.com/marmikshah/rusty-vision"
 keywords = ["image-processing", "computer-vision"]
 license = "MIT"
-license-file = "LICENSE"
 
 [dependencies]
 crc32fast = "1.4.2"
