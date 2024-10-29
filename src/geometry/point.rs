@@ -1,11 +1,8 @@
 use std::ops::Add;
 
 use derive_new::new;
-use log::warn;
 
-use crate::error::Error;
-
-use super::{get_index_from_xyshape, get_index_from_xywh, shape::Shape};
+use super::shape::Shape;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, new)]
 pub struct Point {
@@ -14,7 +11,15 @@ pub struct Point {
 }
 impl Point {
     pub fn distance(&self, point: &Point) -> f32 {
-        (self.x as f32 + point.x as f32) / (self.y as f32 + point.y as f32)
+        let x1 = self.x as f32;
+        let x2 = point.x as f32;
+
+        let y1 = self.y as f32;
+        let y2 = point.y as f32;
+        dbg!((x2-x1).powi(2));
+        dbg!((y2-y1).powi(2));
+        
+        ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
     }
 
     ///
@@ -30,8 +35,7 @@ impl Point {
             180.0 | -180.0 => (width - 1 - x, height - 1 - y),
             270.0 | -90.0 => (y, width - 1 - x),
             _ => {
-                warn!("Rotation for angle {angle:?} is not implemented");
-                (x, y)
+                unimplemented!()
             }
         };
 

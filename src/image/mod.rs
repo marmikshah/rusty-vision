@@ -1,7 +1,7 @@
 /**
- * A single page Implementation of all the core
- * functions for an Image type.
- * The Image structure is purely CPU based and
+ * Defn of the core Image struct
+ *
+ * This Image structure is purely CPU based and
  * has size limitations.
  *  ------------------------------------------------------------
  * Images are stored as a row major vector.
@@ -24,15 +24,13 @@
  *      number-of-channels: The total number of color channels.
  *              (For example, 3 for an RGB image and 4 for RGBA)
  */
-use std::ops::{Index, IndexMut};
-
+mod ops;
 use log::debug;
 
 use crate::color::{Color, ColorSpace};
 use crate::error::Error;
 use crate::geometry::{self, get_index_from_point_and_shape, Point, Shape};
 use crate::traits::*;
-use crate::types::*;
 
 #[derive(Debug, Clone)]
 pub struct Image {
@@ -103,6 +101,20 @@ impl Image {
 
         let image_shape = Shape::new(shape.width, shape.height, Some(self.colorspace.channels()));
         Self::from_data(data, image_shape, self.colorspace)
+    }
+
+    pub fn combine<F>(&mut self, rhs: &Image, op: F)
+    where
+        F: Fn(u32, u32) -> u32,
+    {
+        assert_eq!(self.size(), rhs.size());
+        // TODO: Change clam to support max of the types later
+        self.data
+            .iter_mut()
+            .zip(rhs.data.iter())
+            .for_each(|(a, &b)| {
+                *a = op(*a as u32, b as u32).clamp(0, 255) as u8;
+            });
     }
 
     ///
@@ -176,81 +188,6 @@ impl Image {
             pixel[i] = color[i];
         }
         Ok(())
-    }
-}
-
-///
-/// Overriding [] for 1D indexing.
-///
-/// # Returns an immutable reference to the requested Index
-///     
-///
-impl Index<usize> for Image {
-    type Output = u8;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.data[index]
-    }
-}
-
-///
-/// Overriding [] for 1D indexing.
-///
-/// # Returns a mutable reference to the requested Index
-///     
-///
-impl IndexMut<usize> for Image {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.data[index]
-    }
-}
-
-///
-/// Overriding [] for 2D indexing.
-///
-/// # Returns an immutable reference to a given pixel
-///
-///
-impl Index<Index2D> for Image {
-    type Output = [u8];
-
-    fn index(&self, (x, y): Index2D) -> &Self::Output {
-        let point = Point::new(x, y);
-        self.get_pixel(&point)
-    }
-}
-
-impl IndexMut<Index2D> for Image {
-    fn index_mut(&mut self, (x, y): Index2D) -> &mut Self::Output {
-        let point = Point::new(x, y);
-        self.get_mut_pixel(&point)
-    }
-}
-
-///
-/// Overriding [] for 3D indexing.
-/// This is useful when you want to modify a specific channel
-/// For example, to modify green channel,
-/// image[(2, 2, 1)] = 255
-/// Where `1` = the channel number.
-///
-/// See ColorSpace for more information on Channel Numbers
-///
-impl Index<Index3D> for Image {
-    type Output = u8;
-
-    fn index(&self, (x, y, c): Index3D) -> &Self::Output {
-        let point = Point::new(x, y);
-        let pixel = self.get_pixel(&point);
-        &pixel[c]
-    }
-}
-
-impl IndexMut<Index3D> for Image {
-    fn index_mut(&mut self, (x, y, c): Index3D) -> &mut Self::Output {
-        let point = Point::new(x, y);
-        let pixel = self.get_mut_pixel(&point);
-        &mut pixel[c]
     }
 }
 
