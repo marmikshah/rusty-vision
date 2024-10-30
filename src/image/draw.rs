@@ -97,8 +97,8 @@ impl Drawable<CircleParams> for Image {
 
             for pair in symmetric {
                 if let Some(color) = params.fill_color {
-                    let mut start = pair[0].clone();
-                    let end = pair[1].clone();
+                    let mut start = pair[0];
+                    let end = pair[1];
                     while start.x < end.x - 1 {
                         start.x += 1;
                         self.set_pixel(&start, &color)?;

@@ -9,6 +9,7 @@ pub enum Error {
     IndexOutOfBounds(String),
     InvalidChannel(String),
     NotImplemented(String),
+    ColorSpaceError(String),
 }
 
 impl std::fmt::Display for Error {
@@ -20,6 +21,7 @@ impl std::fmt::Display for Error {
             Error::IndexOutOfBounds(details) => write!(f, "Index out of bounds: {}", details),
             Error::InvalidChannel(_) => todo!(),
             Error::NotImplemented(_) => todo!(),
+            Error::ColorSpaceError(_) => todo!(),
         }
     }
 }
@@ -33,6 +35,7 @@ impl std::error::Error for Error {
             Error::IndexOutOfBounds(_) => None,
             Error::InvalidChannel(_) => todo!(),
             Error::NotImplemented(_) => todo!(),
+            Error::ColorSpaceError(_) => todo!(),
         }
     }
 }
@@ -52,6 +55,7 @@ impl From<Error> for io::Error {
             Error::IndexOutOfBounds(details) => io::Error::new(ErrorKind::Other, details),
             Error::InvalidChannel(_) => todo!(),
             Error::NotImplemented(_) => todo!(),
+            Error::ColorSpaceError(_) => todo!(),
         }
     }
 }
