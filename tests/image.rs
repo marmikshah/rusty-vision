@@ -39,8 +39,16 @@ fn test_image_ops() {
 
     assert_eq!((image1.clone() + image2.clone())[(0, 0, 0)], 255);
     assert_eq!((image1.clone() - image2.clone())[(0, 0, 0)], 0);
-    assert_eq!((image1.clone() & image2.clone())[(0, 0, 0)], (20 & 250).clamp(0, 255));
-    assert_eq!((image1.clone() | image2.clone())[(0, 0, 0)], (20 | 250).clamp(0, 255));
-    assert_eq!((image1.clone() ^ image2.clone())[(0, 0, 0)], (20 ^ 250).clamp(0, 255));
-    
+    assert_eq!(
+        (image1.clone() & image2.clone())[(0, 0, 0)],
+        (20 & 250).clamp(0, 255)
+    );
+    assert_eq!(
+        (image1.clone() | image2.clone())[(0, 0, 0)],
+        (20 | 250).clamp(0, 255)
+    );
+    assert_eq!(
+        (image1.clone() ^ image2.clone())[(0, 0, 0)],
+        (20 ^ 250).clamp(0, 255)
+    );
 }
