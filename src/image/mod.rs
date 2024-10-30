@@ -1,39 +1,40 @@
-/**
- * Defn of the core Image struct
- *
- * This Image structure is purely CPU based and
- * has size limitations.
- *  ------------------------------------------------------------
- * Images are stored as a row major vector.
- * Formula: (y * self.width + x) * number-of-channels
- *
- * For example:
- *     A 3 x 3 Image is stored as a 1D array of length 27
- *     Which looks something like: (Displaying a 2D Structure for visualisation)
- *     [
- *         R00, G00, B00,         R01, G01, B01,          R02, G02, B02
- *         R10, G10, B10          R11, G11, B11,          R12, G12, B12,
- *         R20, G20, B20,         R21, G21, B21,          R22, G22, B22,
- *     ]
- * ---------------------------------------------------------------
- *
- * To get 1D index of a (x, y) pixel point,
- *   = (y * image-width + x) * number-of-channels
- *   where,
- *      image-width: The width of Image in pixels
- *      number-of-channels: The total number of color channels.
- *              (For example, 3 for an RGB image and 4 for RGBA)
- */
+mod draw;
 mod ops;
+mod resize;
+mod rotate;
 use log::debug;
 
 use crate::color::{Color, ColorSpace};
 use crate::error::Error;
-use crate::geometry::{self, get_index_from_point_and_shape, Point, Shape};
-use crate::traits::*;
+use crate::geometry::{self, Point, Shape};
 
 #[derive(Debug, Clone)]
 pub struct Image {
+    /// Core Image struct.
+    ///
+    /// This Image structure is purely CPU based and
+    /// has size limitations.
+    ///  ------------------------------------------------------------
+    /// Images are stored as a row major vector.
+    /// Formula: (y * self.width + x) * number-of-channels
+    ///
+    /// For example:
+    ///     A 3 x 3 RGB Image is stored as a 1D array of length 27 (3 width x 3 height x 3 channels)
+    ///     Which looks something like: (Displaying a 2D Structure for visualization)
+    ///     [
+    ///         R00, G00, B00,         R01, G01, B01,          R02, G02, B02
+    ///         R10, G10, B10          R11, G11, B11,          R12, G12, B12,
+    ///         R20, G20, B20,         R21, G21, B21,          R22, G22, B22,
+    ///     ]
+    /// ---------------------------------------------------------------
+    ///
+    /// To get 1D index of a (x, y) pixel point,
+    ///   = (y * image-width + x) * number-of-channels
+    ///   where,
+    ///      image-width: The width of Image in pixels
+    ///      number-of-channels: The total number of color channels.
+    ///              (For example, 3 for an RGB image and 4 for RGBA)
+    ///
     shape: Shape,
     data: Vec<u8>,
     colorspace: ColorSpace,
@@ -44,7 +45,6 @@ impl Image {
         let data = vec![0; shape.size()];
         assert_eq!(data.len(), shape.size());
         debug!("Creating Image of size {}", data.len());
-        dbg!(data.len());
         Image {
             shape,
             data,
@@ -96,8 +96,6 @@ impl Image {
                 }
             }
         }
-
-        dbg!(data.len());
 
         let image_shape = Shape::new(shape.width, shape.height, Some(self.colorspace.channels()));
         Self::from_data(data, image_shape, self.colorspace)
@@ -190,227 +188,3 @@ impl Image {
         Ok(())
     }
 }
-
-/* ------------------ DRAWING TRAIT ------------------ */
-impl Drawable<RectParams> for Image {
-    ///
-    /// Draw a rectangle on the Image
-    ///
-    fn draw(&mut self, params: &RectParams) -> Result<(), Error> {
-        let border_width = params.border_width.unwrap_or_default();
-
-        match params.fill_color {
-            Some(color) => {
-                let top_left = params.topleft;
-                let bottom_right = params.topleft + params.shape;
-
-                for i in top_left.x..bottom_right.x + 1 {
-                    for j in top_left.y..bottom_right.y + 1 {
-                        let point = Point::new(i, j);
-                        self.set_pixel(&point, &color)?;
-                    }
-                }
-            }
-            None => {
-                dbg!("Fill not enabled");
-            }
-        };
-
-        for i in 0..params.shape.width + border_width {
-            let range = match params.border_width {
-                Some(value) => (-((value / 2) as i32), ((value / 2) + 1) as i32),
-                None => (0, 1),
-            };
-
-            dbg!(range);
-            for k in range.0..range.1 {
-                let x_top_left = params.topleft.x;
-                let y_top_left = params.topleft.y;
-
-                // Top Edge
-                let top = Point::new(
-                    x_top_left + i - (border_width / 2),
-                    (y_top_left as i32 + k) as usize,
-                );
-                dbg!(top);
-                self.set_pixel(&top, &params.color)?;
-
-                // Left Side
-                let left = Point::new(
-                    (x_top_left as i32 + k) as usize,
-                    y_top_left + i - (border_width / 2),
-                );
-                dbg!(left);
-                self.set_pixel(&left, &params.color)?;
-
-                // Right Edge
-                let right = Point::new(
-                    ((x_top_left + params.shape.width) as i32 - k) as usize,
-                    y_top_left + i - (border_width / 2),
-                );
-                dbg!(right);
-                self.set_pixel(&right, &params.color)?;
-
-                // Bottom Edge
-                let bottom = Point::new(
-                    x_top_left + i - (border_width / 2),
-                    ((y_top_left + params.shape.height) as i32 - k) as usize,
-                );
-                dbg!(bottom);
-                self.set_pixel(&bottom, &params.color)?;
-            }
-        }
-
-        Ok(())
-    }
-}
-
-impl Drawable<CircleParams> for Image {
-    ///
-    /// Draw a circle on the Image using the Midpoint Circle Algorithm.
-    ///
-    fn draw(&mut self, params: &CircleParams) -> Result<(), Error> {
-        println!("Drawing circle {params:?}");
-
-        let mut x = params.radius;
-        let mut y = 0;
-
-        let mut p: f32 = 1.0 - params.radius as f32;
-
-        while x >= y {
-            dbg!(x, y, p);
-
-            let symmetric = [
-                [
-                    Point::new(params.center.x - x, params.center.y + y),
-                    Point::new(params.center.x + x, params.center.y + y),
-                ],
-                [
-                    Point::new(params.center.x - x, params.center.y - y),
-                    Point::new(params.center.x + x, params.center.y - y),
-                ],
-                [
-                    Point::new(params.center.x - y, params.center.y + x),
-                    Point::new(params.center.x + y, params.center.y + x),
-                ],
-                [
-                    Point::new(params.center.x - y, params.center.y - x),
-                    Point::new(params.center.x + y, params.center.y - x),
-                ],
-            ];
-
-            for pair in symmetric {
-                if let Some(color) = params.fill_color {
-                    let mut start = pair[0].clone();
-                    let end = pair[1].clone();
-                    while start.x < end.x - 1 {
-                        start.x += 1;
-                        dbg!(start);
-                        self.set_pixel(&start, &color)?;
-                    }
-                }
-
-                self.set_pixel(&pair[0], &params.color)?;
-                self.set_pixel(&pair[1], &params.color)?;
-            }
-
-            y += 1;
-
-            if p <= 0.0 {
-                p = p + 2.0 * y as f32 + 1.0;
-            } else {
-                x -= 1;
-                p = p + 2.0 * y as f32 - 2.0 * x as f32 + 1.0;
-            }
-        }
-
-        Ok(())
-    }
-}
-/* ------------------ ------- ----- ------------------ */
-
-/* ------------------ RESIZE TRAIT ------------------ */
-impl Resizable<NearestNeighborParams> for Image {
-    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
-        todo!()
-    }
-}
-
-impl Resizable<BiCubicParams> for Image {
-    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
-        todo!()
-    }
-}
-
-impl Resizable<BiLinearParams> for Image {
-    fn resize(&mut self, shape: Shape) -> Result<(), Error> {
-        todo!()
-    }
-}
-/* ------------------ ------ ----- ------------------ */
-
-/* ------------------ ROTATION TRAIT ------------------ */
-
-impl Rotatable<i32> for Image {
-    fn rotate(&mut self, value: i32) -> Result<(), Error> {
-        // Custom rotation by degrees.
-        todo!()
-    }
-}
-
-impl Rotatable<RotationType> for Image {
-    ///
-    /// Perform in-place rotation.
-    ///
-    fn rotate(&mut self, value: RotationType) -> Result<(), Error> {
-        let new_shape = match value {
-            RotationType::Clockwise90
-            | RotationType::Anticlockwise270
-            | RotationType::Clockwise270
-            | RotationType::Anticlockwise90 => Shape {
-                width: self.height(),
-                height: self.width(),
-                ndim: self.shape.ndim,
-            },
-            RotationType::Clockwise180 | RotationType::Anticlockwise180 => self.shape,
-            RotationType::Custom(_) => todo!(),
-        };
-
-        if new_shape == self.shape {
-            for x in 0..self.width() / 2 {
-                for y in 0..self.height() {
-                    let p1 = Point::new(x, y);
-                    let p2 = p1.relocate(&self.shape, value.degree());
-
-                    let idx_a = self.get_index(&p1).unwrap();
-                    let idx_b = get_index_from_point_and_shape(p2, &new_shape).unwrap();
-
-                    for c in 0..self.colorspace.channels() {
-                        self.swap(idx_a + c, idx_b + c);
-                    }
-                }
-            }
-        } else {
-            // TODO: Improve to in-place
-            let mut rotated = vec![0; self.size()];
-            let ndim = self.shape.ndim;
-            for x in 0..self.width() {
-                for y in 0..self.height() {
-                    let p1 = Point::new(x, y);
-                    let p2 = p1.relocate(&self.shape, value.degree());
-
-                    let idx_a = self.get_index(&p1).unwrap();
-                    let idx_b = get_index_from_point_and_shape(p2, &new_shape).unwrap();
-
-                    rotated[idx_b..ndim + idx_b].copy_from_slice(&self.data[idx_a..ndim + idx_a]);
-                }
-            }
-
-            self.data = rotated;
-            self.shape = new_shape;
-        }
-
-        Ok(())
-    }
-}
-/* ------------------ -------- ----- ------------------ */

@@ -1,7 +1,7 @@
 use super::Image;
-use crate::geometry::{Point, Shape};
+use crate::geometry::Point;
 use crate::types::*;
-use std::ops::{Add, BitAnd, BitOr, Index, IndexMut, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Index, IndexMut, Sub};
 
 ///
 /// 1-D Indexing.
@@ -52,7 +52,7 @@ impl Index<Index2D> for Image {
 
 ///
 /// 2-D Indexing.
-/// Same as IndexMut<Index2D>, but mutatable.
+/// Same as `IndexMut<Index2D>`, but mutatable.
 ///
 /// # Returns
 /// * [u8]
@@ -88,7 +88,7 @@ impl Index<Index3D> for Image {
 
 ///
 /// 3-D Indexing
-/// Same as IndexMut<Index3D> but mutatable.
+/// Same as `IndexMut<Index3D>` but mutatable.
 ///
 /// # Returns
 /// * u8
@@ -140,4 +140,11 @@ impl BitOr<Image> for Image {
     }
 }
 
-// --------------------- ------------------------ -------------------- \\
+impl BitXor<Image> for Image {
+    type Output = Image;
+
+    fn bitxor(mut self, rhs: Image) -> Self::Output {
+        self.combine(&rhs, |a, b| a ^ b);
+        self
+    }
+}

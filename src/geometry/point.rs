@@ -10,23 +10,51 @@ pub struct Point {
     pub y: usize,
 }
 impl Point {
+    ///
+    /// Distance between self and another Point
+    /// Uses the distance formula
+    /// sqrt((x2 - x1)^2 + (y2 - y1)^2)
+    ///
+    /// # Arguments
+    /// * `point` - The other Point to compute distance to
+    ///
+    /// # Returns
+    /// * f32
+    ///
+    /// # Examples
+    /// ```
+    /// let p1 = Point::new(10, 10);
+    /// let p2 = Point::new(20, 20);
+    /// let distance = p1.distance(p2);
+    /// assert_eq!((distance * 1000).round(), 14142.0)
+    ///
+    /// println!("Distance between {p1:?} and {p2:?} = {distance}");
+    /// ```
     pub fn distance(&self, point: &Point) -> f32 {
         let x1 = self.x as f32;
         let x2 = point.x as f32;
 
         let y1 = self.y as f32;
         let y2 = point.y as f32;
-        dbg!((x2-x1).powi(2));
-        dbg!((y2-y1).powi(2));
-        
+
         ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
     }
 
     ///
-    /// Compute new coordinates for a self when translated to a new shape
-    pub fn relocate(&self, original_shape: &Shape, angle: f32) -> Point {
-        let width = original_shape.width;
-        let height = original_shape.height;
+    /// Rotate the Point by certain angle within a Shape
+    /// TODO: Find a better naming system for this
+    ///
+    ///
+    /// # Arguments
+    /// * `rect` - The Rect in which this point needs
+    ///     to be relocated
+    /// * `angle` - The angle of rotation.
+    ///
+    /// # Returns
+    /// * Point
+    pub fn relocate(&self, rect: &Shape, angle: f32) -> Point {
+        let width = rect.width;
+        let height = rect.height;
 
         let (x, y) = (self.x, self.y);
 
