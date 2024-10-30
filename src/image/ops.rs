@@ -117,7 +117,7 @@ impl Sub<Image> for Image {
     type Output = Image;
 
     fn sub(mut self, rhs: Image) -> Self::Output {
-        self.combine(&rhs, |a, b| a - b);
+        self.combine(&rhs, |a, b| if a <= b { 0 } else { a - b });
         self
     }
 }

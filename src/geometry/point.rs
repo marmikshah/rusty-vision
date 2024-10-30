@@ -23,10 +23,11 @@ impl Point {
     ///
     /// # Examples
     /// ```
+    /// use rusty_vision::geometry::Point;
     /// let p1 = Point::new(10, 10);
     /// let p2 = Point::new(20, 20);
-    /// let distance = p1.distance(p2);
-    /// assert_eq!((distance * 1000).round(), 14142.0)
+    /// let distance = p1.distance(&p2);
+    /// assert_eq!((distance * 1000.0).round(), 14142.0);
     ///
     /// println!("Distance between {p1:?} and {p2:?} = {distance}");
     /// ```

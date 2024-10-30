@@ -20,7 +20,7 @@ fn test_image_create() {
 }
 
 #[test]
-fn test_image_add() {
+fn test_image_ops() {
     let shape = Shape {
         width: 2,
         height: 2,
@@ -30,57 +30,17 @@ fn test_image_add() {
     let mut image1 = Image::new(shape, ColorSpace::RGB);
     let mut image2 = Image::new(shape, ColorSpace::RGB);
 
-    let color = Color::new(20, 0, 0, 1.0);
+    let color1 = Color::new(20, 0, 0, 1.0);
+    let color2 = Color::new(250, 0, 0, 1.0);
     let point = Point::new(0, 0);
 
-    image1.set_pixel(&point.clone(), &color.clone()).unwrap();
+    image1.set_pixel(&point, &color1).unwrap();
+    image2.set_pixel(&point, &color2).unwrap();
 
-    image2.set_pixel(&point.clone(), &color.clone()).unwrap();
-    image1 = image1 + image2;
-
-    assert_eq!(image1[(0, 0, 0)], 40);
-}
-
-#[test]
-fn test_image_add_out_of_range() {
-    let shape = Shape {
-        width: 2,
-        height: 2,
-        ndim: 3,
-    };
-
-    let mut image1 = Image::new(shape, ColorSpace::RGB);
-    let mut image2 = Image::new(shape, ColorSpace::RGB);
-
-    let color = Color::new(200, 0, 0, 1.0);
-    let point = Point::new(0, 0);
-
-    image1.set_pixel(&point.clone(), &color.clone()).unwrap();
-
-    image2.set_pixel(&point.clone(), &color.clone()).unwrap();
-    image1 = image1 + image2;
-
-    assert_eq!(image1[(0, 0, 0)], 255);
-}
-
-#[test]
-fn test_bitwise_and() {
-    let shape = Shape {
-        width: 2,
-        height: 2,
-        ndim: 3,
-    };
-
-    let mut image1 = Image::new(shape, ColorSpace::RGB);
-    let mut image2 = Image::new(shape, ColorSpace::RGB);
-
-    let color = Color::new(200, 0, 0, 1.0);
-    let point = Point::new(0, 0);
-
-    image1.set_pixel(&point.clone(), &color.clone()).unwrap();
-
-    image2.set_pixel(&point.clone(), &color.clone()).unwrap();
-    image1 = image1 & image2;
-
-    assert_eq!(image1[(0, 0, 0)], 0);
+    assert_eq!((image1.clone() + image2.clone())[(0, 0, 0)], 255);
+    assert_eq!((image1.clone() - image2.clone())[(0, 0, 0)], 0);
+    assert_eq!((image1.clone() & image2.clone())[(0, 0, 0)], (20 & 250).clamp(0, 255));
+    assert_eq!((image1.clone() | image2.clone())[(0, 0, 0)], (20 | 250).clamp(0, 255));
+    assert_eq!((image1.clone() ^ image2.clone())[(0, 0, 0)], (20 ^ 250).clamp(0, 255));
+    
 }
