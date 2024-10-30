@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::image::Image;
+use crate::{error::Error, image::Image};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[allow(clippy::upper_case_acronyms)]
@@ -39,9 +39,9 @@ impl ColorSpace {
 
     // TODO
     #[allow(unused_variables)]
-    pub fn convert_to(&self, image: &Image, color_space: &ColorSpace) -> Result<(), ()> {
+    pub fn convert_to(&self, image: &Image, color_space: &ColorSpace) -> Result<(), Error> {
         if !self.can_convert_to(color_space) {
-            Err(())
+            Err(Error::ColorSpaceError("Cannot convert".to_string()))
         } else {
             Ok(())
         }

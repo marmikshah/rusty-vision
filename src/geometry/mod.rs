@@ -71,9 +71,3 @@ pub fn get_index_from_xyshape(x: usize, y: usize, shape: &Shape) -> Result<usize
 pub fn get_index_from_point_and_shape(point: Point, shape: &Shape) -> Result<usize, Error> {
     get_index_from_xyshape(point.x, point.y, shape)
 }
-
-// (0, 0) => (width - 1, y)
-// (0, 1) => (width - 1, y + 1)
-pub fn rotate(original_shape: Shape, target_shape: Shape, point: Point, angle: f32) -> Point {
-    Point { x: 0, y: 0 }
-}
