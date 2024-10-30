@@ -21,7 +21,7 @@ impl Index<usize> for Image {
 
 ///
 /// 1-D Indexing.
-/// Same as IndexMut, but mutatable.
+/// Same as IndexMut, but mutable.
 ///
 impl IndexMut<usize> for Image {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
@@ -52,7 +52,7 @@ impl Index<Index2D> for Image {
 
 ///
 /// 2-D Indexing.
-/// Same as `IndexMut<Index2D>`, but mutatable.
+/// Same as `IndexMut<Index2D>`, but mutable.
 ///
 /// # Returns
 /// * [u8]
@@ -88,7 +88,7 @@ impl Index<Index3D> for Image {
 
 ///
 /// 3-D Indexing
-/// Same as `IndexMut<Index3D>` but mutatable.
+/// Same as `IndexMut<Index3D>` but mutable.
 ///
 /// # Returns
 /// * u8

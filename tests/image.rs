@@ -6,7 +6,6 @@ use rv::{
     image::Image,
 };
 
-
 #[test]
 fn test_image_create() {
     let image = Image::new(
