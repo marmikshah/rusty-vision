@@ -4,7 +4,6 @@
 
 [![Crates.io](https://img.shields.io/crates/v/rusty-vision.svg)](https://crates.io/crates/rusty-vision)
 [![Docs.rs](https://docs.rs/rusty-vision/badge.svg)](https://docs.rs/rusty-vision)
-[![Release](https://github.com/marmikshah/rusty-vision/actions/workflows/publish.yml/badge.svg)](https://github.com/marmikshah/rusty-vision/actions/workflows/publish.yml)
 [![CI](https://github.com/marmikshah/rusty-vision/actions/workflows/ci.yml/badge.svg)](https://github.com/marmikshah/rusty-vision/actions/workflows/ci.yml)
 
 ## Overview
