@@ -1,0 +1,17 @@
+{
+    "editor.formatOnSave": true,
+    "rust-analyzer.check.allTargets": false,
+    "rust-analyzer.check.extraArgs": [
+        "--all"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "target": true
+    }
+}
