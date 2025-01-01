@@ -8,7 +8,7 @@ pub enum ColorSpace {
     RGB,
     RGBA,
     BGR,
-    BRGA,
+    BGRA,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -29,7 +29,7 @@ impl ColorSpace {
             ColorSpace::RGB => 3,
             ColorSpace::RGBA => 4,
             ColorSpace::BGR => 3,
-            ColorSpace::BRGA => 4,
+            ColorSpace::BGRA => 4,
         }
     }
 

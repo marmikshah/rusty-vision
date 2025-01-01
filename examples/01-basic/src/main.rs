@@ -1,17 +1,6 @@
 use rusty_vision as rv;
 
-use rv::image::Image;
-use rv::traits::*;
-
-// Useful structures for geometric operations
-use rv::geometry::{Point, Shape};
-
-// Structures and Implenetations for Colors and Channels.
-use rv::color::{Color, ColorSpace};
-
-// Image Encoding/Decoding
-use rv::codec::Codex;
-use rv::io::writer::Writer;
+use rv::prelude::*;
 
 fn main() {
     let mut image = Image::new(

@@ -1,2 +1,5 @@
-pub mod reader;
-pub mod writer;
+mod reader;
+mod writer;
+
+pub use reader::Reader;
+pub use writer::Writer;
