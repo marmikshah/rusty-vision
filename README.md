@@ -43,19 +43,9 @@ Import the core Image module and basic traits
 Full code at [01-basic](./examples/01-basic/)
 
 ```rust
-// Core Image Structure and its traits
-use rv::image::Image;
-use rv::traits::*;
+use rusty_vision as rv;
 
-// Useful structures for geometric operations
-use rv::geometry::{Point, Shape};
-
-// Structures and Implenetations for Colors and Channels.
-use rv::color::{Color, ColorSpace};
-
-// Image Encoding/Decoding
-use rv::codec::Codex;
-use rv::io::writer::Writer;
+use rv::prelude::*;
 ```
 
 Create a blank image with black background.
