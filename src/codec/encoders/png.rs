@@ -1,10 +1,11 @@
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
 
+use crate::error::Error;
 use crate::image::Image;
 use std::io::Write;
 
-pub fn encode(image: &Image) -> Result<Vec<u8>, crate::error::Error> {
+pub fn encode(image: &Image) -> Result<Vec<u8>, Error> {
     let png_signature = b"\x89PNG\r\n\x1a\n";
     let mut png_data = Vec::new();
     png_data.extend_from_slice(png_signature);
@@ -50,9 +51,13 @@ pub fn encode(image: &Image) -> Result<Vec<u8>, crate::error::Error> {
     }
 
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
-    encoder.write_all(&raw_data)?;
+    encoder
+        .write_all(&raw_data)
+        .map_err(|e| Error::ImageEncodeError(format!("Failed to write PNG data: {}", e)))?;
 
-    let compressed_data = encoder.finish()?;
+    let compressed_data = encoder
+        .finish()
+        .map_err(|e| Error::ImageEncodeError(format!("Failed to compress PNG data: {}", e)))?;
 
     let idat_chunk = create_chunk(b"IDAT", &compressed_data);
     png_data.extend_from_slice(&idat_chunk);

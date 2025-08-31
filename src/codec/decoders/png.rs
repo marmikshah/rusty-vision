@@ -1,7 +1,7 @@
 use flate2::read::ZlibDecoder;
 
 use std::fs::File;
-use std::io::{self, Read};
+use std::io::Read;
 use std::vec;
 
 use crate::color::ColorSpace;
@@ -11,29 +11,35 @@ use crate::image::Image;
 
 pub fn decode(file: &mut File) -> Result<Image, Error> {
     let mut signature = [0; 8];
-    file.read_exact(&mut signature)?;
+    file.read_exact(&mut signature)
+        .map_err(|e| Error::ImageDecodeError(format!("Failed to read PNG signature: {}", e)))?;
 
     if &signature != b"\x89PNG\r\n\x1a\n" {
-        return Err(Error::ImageDecodeError(std::io::Error::new(
-            io::ErrorKind::InvalidData,
-            "Invalid PNG Signature",
-        )));
+        return Err(Error::ImageDecodeError("Invalid PNG Signature".to_string()));
     }
 
-    fn read_chunk<R: Read>(reader: &mut R) -> io::Result<([u8; 4], Vec<u8>)> {
+    fn read_chunk<R: Read>(reader: &mut R) -> Result<([u8; 4], Vec<u8>), Error> {
         let mut length_bytes = [0; 4];
-        reader.read_exact(&mut length_bytes)?;
+        reader
+            .read_exact(&mut length_bytes)
+            .map_err(|e| Error::ImageDecodeError(format!("Failed to read chunk length: {}", e)))?;
 
         let length = u32::from_be_bytes(length_bytes);
 
         let mut chunk_type = [0; 4];
-        reader.read_exact(&mut chunk_type)?;
+        reader
+            .read_exact(&mut chunk_type)
+            .map_err(|e| Error::ImageDecodeError(format!("Failed to read chunk type: {}", e)))?;
 
         let mut data = vec![0; length as usize];
-        reader.read_exact(&mut data)?;
+        reader
+            .read_exact(&mut data)
+            .map_err(|e| Error::ImageDecodeError(format!("Failed to read chunk data: {}", e)))?;
 
         let mut crc_bytes = [0; 4];
-        reader.read_exact(&mut crc_bytes)?;
+        reader
+            .read_exact(&mut crc_bytes)
+            .map_err(|e| Error::ImageDecodeError(format!("Failed to read chunk CRC: {}", e)))?;
 
         Ok((chunk_type, data))
     }
@@ -48,18 +54,8 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
         dbg!(String::from_utf8_lossy(&chunk_type));
         match &chunk_type {
             b"IHDR" => {
-                width = u32::from_be_bytes([
-                    chunk_data[0],
-                    chunk_data[1],
-                    chunk_data[2],
-                    chunk_data[3],
-                ]);
-                height = u32::from_be_bytes([
-                    chunk_data[4],
-                    chunk_data[5],
-                    chunk_data[6],
-                    chunk_data[7],
-                ]);
+                width = u32::from_be_bytes(chunk_data[0..4].try_into().unwrap());
+                height = u32::from_be_bytes(chunk_data[4..8].try_into().unwrap());
 
                 println!("Bit Depth: {}", chunk_data[8]);
                 colortype = chunk_data[9];
@@ -90,7 +86,9 @@ pub fn decode(file: &mut File) -> Result<Image, Error> {
 
     let mut zlib_decoder = ZlibDecoder::new(&image_data[..]);
     let mut decompressed = Vec::new();
-    zlib_decoder.read_to_end(&mut decompressed)?;
+    zlib_decoder
+        .read_to_end(&mut decompressed)
+        .map_err(|e| Error::ImageDecodeError(format!("Failed to decompress PNG data: {}", e)))?;
 
     println!("Decompressed size:{}", decompressed.len());
 

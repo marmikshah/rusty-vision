@@ -13,6 +13,12 @@ pub enum ColorSpace {
     Gray,
 }
 
+impl std::fmt::Display for ColorSpace {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Color {
     pub red: u8,
@@ -45,7 +51,10 @@ impl ColorSpace {
     #[allow(unused_variables)]
     pub fn convert_to(&self, image: &Image, color_space: &ColorSpace) -> Result<(), Error> {
         if !self.can_convert_to(color_space) {
-            Err(Error::ColorSpaceError("Cannot convert".to_string()))
+            Err(Error::UnsupportedOperation(format!(
+                "Cannot convert from {} to {}",
+                self, color_space
+            )))
         } else {
             Ok(())
         }
