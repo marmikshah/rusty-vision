@@ -26,5 +26,8 @@ fn main() {
     );
     image.draw(&config).unwrap();
 
-    image.write("output.png".to_string(), Codec::PNG).unwrap();
+    let writer = ImageWriter;
+    writer
+        .write("output.png", Codec::Image(ImageCodec::PNG), image)
+        .unwrap();
 }
