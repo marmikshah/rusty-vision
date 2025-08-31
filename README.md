@@ -12,14 +12,11 @@ A basic image processing and manipulation library with the aim to provide OpenCV
 
 :construction: **Since the repo is still in very early phase, please expect breaking changes with new releases.**
 
-## Features
+## Feature Plan
 
-- (WIP) Image Compression & Decompression.
-- (WIP) Drawing Shapes.
-- (WIP) Image Cropping & Resising.
-- (TODO) Background Subtraction.
-- (TODO) Optical Flow.
-- (Future Plan) HW Accelerated Image Operations.
+- [ ] Image Compression & Decompression. (WIP)
+- [ ] Image Operations (WIP)
+- [ ] Hardware Acceleration & Optimisations 
 
 ## Installation
 
