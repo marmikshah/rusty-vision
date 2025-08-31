@@ -26,5 +26,5 @@ fn main() {
     );
     image.draw(&config).unwrap();
 
-    image.write("output.png".to_string(), Codex::PNG).unwrap();
+    image.write("output.png".to_string(), Codec::PNG).unwrap();
 }

@@ -7,7 +7,7 @@ use rv::geometry::{Point, Shape};
 use rv::image::Image;
 use rv::traits::*;
 
-use rv::codec::Codex;
+use rv::codec::Codec;
 use rv::error::Error;
 use rv::io::writer::Writer;
 
@@ -34,22 +34,22 @@ fn main() -> Result<(), Error> {
     // let circle = CircleParams::new(center, 20, color, None);
     image.draw(&circle)?;
 
-    image.write("output.png".to_string(), Codex::PNG)?;
+    image.write("output.png".to_string(), Codec::PNG)?;
 
     let mut c180 = image.clone();
     c180.rotate(RotationType::Clockwise180)?;
-    c180.write("rotated-c180.png".to_string(), Codex::PNG)?;
+    c180.write("rotated-c180.png".to_string(), Codec::PNG)?;
 
     // Rotations alter the same Image structure, so copy if needed
     let mut c90 = image.clone();
     c90.rotate(RotationType::Clockwise90)?;
-    c90.write("rotated-c90.png".to_string(), Codex::PNG)?;
+    c90.write("rotated-c90.png".to_string(), Codec::PNG)?;
 
     let mut c270 = image.clone();
     c270.rotate(RotationType::Clockwise270)?;
-    c270.write("rotated-c270.png".to_string(), Codex::PNG)?;
+    c270.write("rotated-c270.png".to_string(), Codec::PNG)?;
 
     let crop = image.crop(topleft, rectshape);
-    crop.write("cropped.png".to_string(), Codex::PNG)?;
+    crop.write("cropped.png".to_string(), Codec::PNG)?;
     Ok(())
 }

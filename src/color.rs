@@ -9,6 +9,8 @@ pub enum ColorSpace {
     RGBA,
     BGR,
     BGRA,
+    YUV420P,
+    Gray,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -30,6 +32,8 @@ impl ColorSpace {
             ColorSpace::RGBA => 4,
             ColorSpace::BGR => 3,
             ColorSpace::BGRA => 4,
+            ColorSpace::YUV420P => 3, // Special case, 3 Planes Y, U, V
+            ColorSpace::Gray => 1,
         }
     }
 

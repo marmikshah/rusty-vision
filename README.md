@@ -82,5 +82,5 @@ Save as PNG (Currently only PNG supported)
 
 ```rust
 // NOTE: `unwrap` can panic
-image.write("output.png".to_string(), Codex::PNG).unwrap();
+image.write("output.png".to_string(), Codec::PNG).unwrap();
 ```
